@@ -4,6 +4,7 @@ const upath = require('upath')
 const { threadId } = require('worker_threads')
 const genericAction = require('@adobe/generator-add-action-generic')
 const webAssets = require('@adobe/generator-add-web-assets-exc-react')
+//const readline = require('node:readline')
 
 const {constants,utils} = require('@adobe/generator-app-common-lib')
 const { runtimeManifestKey } = constants
@@ -19,6 +20,9 @@ class AEMAdminGenerator extends Generator {
 
     */
     this.option('skip-prompt', { default: false })
+    this.log("\n")
+    this.log("You will be guided through a brief questionnaire for you to choose what customization you would like to add to the AEM admin console!")
+    this.log("\n")
     }
   async initializing () {
     this.extFolder = 'aem/cf-admin'
@@ -107,6 +111,14 @@ class AEMAdminGenerator extends Generator {
     // ! this.log("\n")
     // ! this.log("\x1b[34mTo view the application in the Experience Cloud Shell:\x1b[0m")
     // ! this.log("\x1b[34m->  https://experience.adobe.com/?shell_source=dev&shell_devmode=true#/aem/cf/admin&ext=https://localhost:7777\x1b[0m")
+    const destFolder = this.webSrcFolder
+
+    // TODO: The below lines are to be uncommented after the folder structure inside templates folder is finalized.
+    // ! this.fs.copyTpl(
+    // ! this.templatePath('./**/*'),
+    // ! this.destinationPath(destFolder),
+    // ! this.props
+    // ! )
     
 
       const unixExtConfigPath = upath.toUnix(this.extConfigPath)
@@ -141,6 +153,19 @@ class AEMAdminGenerator extends Generator {
     utils.writeKeyYAMLConfig(this, this.extConfigPath, 'actions', path.relative(this.extFolder, this.actionFolder))
     // add web-src path, relative to config file
     utils.writeKeyYAMLConfig(this, this.extConfigPath, 'web', path.relative(this.extFolder, this.webSrcFolder))
+  }
+
+  async end() {
+    const fileDeleteConfigPath = path.join(__dirname,'sample.txt')
+    const fileDeleteConfigContent = this.fs.read(fileDeleteConfigPath)
+    const fileDeletePath = fileDeleteConfigContent.split("\n")
+    for(const filePath of fileDeletePath) {
+      this.log(path.join(this.webSrcFolder,filePath))
+      this.fs.delete(path.join(this.webSrcFolder,filePath))
+    }
+    //const fileToDelete = path.join(this.webSrcFolder,'src/components/About.js')
+
+    //this.log(this.fs.read('src/sample.txt'))
   }
     
 }
