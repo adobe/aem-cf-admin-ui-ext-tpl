@@ -1,92 +1,97 @@
+/*
+Copyright 2022 Adobe. All rights reserved.
+This file is licensed to you under the Apache License, Version 2.0 (the "License")
+you may not use this file except in compliance with the License. You may obtain a copy
+of the License at http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed under
+the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+OF ANY KIND, either express or implied. See the License for the specific language
+governing permissions and limitations under the License.
+*/
+
 const Generator = require('yeoman-generator')
 const path = require('path')
 const upath = require('upath')
-const { threadId } = require('worker_threads')
-const genericAction = require('@adobe/generator-add-action-generic')
-const webAssets = require('@adobe/generator-add-web-assets-exc-react')
+const fs = require('fs-extra')
 
-const {constants,utils} = require('@adobe/generator-app-common-lib')
+const runtimeAction = require('./generator-add-action-cf-admin-ui')
+const webAssets = require('./generator-add-web-assets-cf-admin-ui')
+
+const {constants, utils} = require('@adobe/generator-app-common-lib')
 const { runtimeManifestKey } = constants
+const { briefOverviews, promptTopLevelFields, promptMainMenu } = require('./prompts')
+const cwd = process.cwd()
 
-class AEMAdminGenerator extends Generator {
+/*
+'initializing',
+'prompting',
+'configuring',
+'default',
+'writing',
+'conflicts',
+'install',
+'end'
+*/
+
+class MainGenerator extends Generator {
   constructor (args, opts) {
     super(args, opts)
-    /* 
-    todo: Need to check where the below lines are used and if required or not
-     ! this.option('config-path',{type:String})
-     ! this.props = {}
-     ! this.props.projectName = utils.readPackageJson(this).name
-
-    */
+    
+    // options are inputs from CLI or yeoman parent generator
     this.option('skip-prompt', { default: false })
-    }
-  async initializing () {
-    this.extFolder = 'aem/cf-admin'
+  }
+  
+  initializing () {
+    // all paths are relative to root
+    this.extFolder = 'src/dx-excshell-1/cf-admin'
+    this.actionFolder = path.join(this.extFolder, 'actions')
+    
+    // todo support multi UI (could be one for each operation)
+    this.webSrcFolder = path.join(this.extFolder, 'web-src')
+    this.extConfigPath = path.join(this.extFolder, 'ext.config.yaml')
     this.configName = 'dx/excshell/1'
-    }
+    // this.extFolder = path.join(this.extFolder, 'item-menu')
 
+    this.customManifest = readManifest()
+  }
 
   async prompting () {
-    this.userCustomizationPreference = await this.prompt([
-      {
-        type: 'list',
-        name: 'adminUICustomization',
-        message: 'What do you want to extend in AEM Content Fragment Console?',
-        choices: [
-          {
-            name:'Item Action Menu',
-            value: 'Item Action Menu'
-          },
-          {
-            name:'Application Menu',
-            value:'Application Menu'
-          }
-        ]
-      }
-    ])
-    
-    this.userAddActionPreference = await this.prompt([
-      {
-        type:'list',
-        name:'addAction',
-        message:'Do you need server-to-server communication?',
-        choices: [
-          {
-          name:'Yes',
-          value: 'Yes'
-          },
-          {
-            name:'No',
-            value:'No'
-          }
+    // const customManifest = readManifest()
 
-        ]
-      }
-    ])
-    if(this.userCustomizationPreference.adminUICustomization == 'Item Action Menu') {
-      this.extFolder = path.join(this.extFolder,'item-menu')
-    } 
-    else {
-      this.extFolder = path.join(this.extFolder,'app-menu')
+    this.log(briefOverviews['templateInfo'])
+    await promptTopLevelFields(this.customManifest)
+      .then(() => promptMainMenu(this.customManifest))
+      .then(() => writeManifest(this.customManifest))
+      .then(() => {
+        this.log("\nCustom Manifest for Pre-generating Code")
+        this.log("---------------------------------------")
+        this.log(JSON.stringify(this.customManifest, null, '  '))
+        // this.log(
+        //   'Scaffolding complete. You may run the tool again at any time to add to your project.'
+        // )
+      })
+  }
+
+  async writing () {
+    // generate the generic action
+    if (this.customManifest.runtimeActions) {
+      this.customManifest.runtimeActions.forEach((actionName) => {
+        this.composeWith({
+          Generator: runtimeAction,
+          path: 'unknown'
+        },
+        {
+          // forward needed args
+          'skip-prompt': true, // do not ask for action name
+          'action-folder': this.actionFolder,
+          'config-path': this.extConfigPath,
+          'full-key-to-manifest': runtimeManifestKey,
+          'action-name': actionName
+        })
+      })
     }
-    this.extConfigPath=path.join(this.extFolder,'ext.config.yaml')
-    this.webSrcFolder = path.join(this.extFolder,'web-src')
-    this.actionFolder = path.join(this.extFolder,'actions')
-    
-    if(this.userAddActionPreference.addAction == 'Yes') {
-      this.composeWith({
-        Generator: genericAction,
-        path:'unknown'
-      },
-      {
-        'skip-prompt':false,
-        'action-folder':this.actionFolder,
-        'config-path':this.extConfigPath,
-        'full-key-to-manifest':runtimeManifestKey
 
-      }) 
-
-    }
+    // generate the UI
     this.composeWith({
       Generator: webAssets,
       path: 'unknown'
@@ -94,36 +99,22 @@ class AEMAdminGenerator extends Generator {
     {
       'skip-prompt': this.options['skip-prompt'],
       'web-src-folder': this.webSrcFolder,
-      'config-path': this.extConfigPath
+      'config-path': this.extConfigPath,
+      'custom-manifest': this.customManifest
     })
-  }
 
-  async writing () {
-    this.log("\n")
-    this.log("AEM Content Fragment Admin Console Extension " + this.userCustomizationPreference.adminUICustomization+ " generated.")
-    this.log("\n")
-    // ! this.log("Add your logic here: "+"\x1b[35m"+path.join(this.contextRoot,destFolder)+":"+line+"\x1b[0m")
-    // ! this.log("Test your extension using \x1b[33m`npm start`\x1b[0m")
-    // ! this.log("\n")
-    // ! this.log("\x1b[34mTo view the application in the Experience Cloud Shell:\x1b[0m")
-    // ! this.log("\x1b[34m->  https://experience.adobe.com/?shell_source=dev&shell_devmode=true#/aem/cf/admin&ext=https://localhost:7777\x1b[0m")
-    
-
-      const unixExtConfigPath = upath.toUnix(this.extConfigPath)
-      this.log(unixExtConfigPath)
+    const unixExtConfigPath = upath.toUnix(this.extConfigPath)
     // add the extension point config in root
-      utils.writeKeyAppConfig(
+    utils.writeKeyAppConfig(
       this,
       // key
       'extensions.' + this.configName,
       // value
       {
         // posix separator
-
         $include: unixExtConfigPath
       }
     )
-
 
     // add extension point operation
     utils.writeKeyYAMLConfig(
@@ -139,12 +130,45 @@ class AEMAdminGenerator extends Generator {
 
     // add actions path, relative to config file
     utils.writeKeyYAMLConfig(this, this.extConfigPath, 'actions', path.relative(this.extFolder, this.actionFolder))
+    
     // add web-src path, relative to config file
     utils.writeKeyYAMLConfig(this, this.extConfigPath, 'web', path.relative(this.extFolder, this.webSrcFolder))
   }
-    
+
+  async conflicts () {
+    const content = utils.readPackageJson(this)
+    content['description'] = this.customManifest['description']
+    content['version'] = this.customManifest['version']
+    utils.writePackageJson(this, content)
+  }
+
+  async end () {
+    this.log('\nSample code files have been generated.\n')
+    this.log('Next steps:')
+    this.log('1) Check that you have the "aio-cli-plugin-extension" plugin installed, `aio plugins install @adobe/aio-cli-plugin-extension`')
+    this.log('2) Populate your local environment variables in the ".env" file')
+    this.log('3) Now you can use `aio app run` or `aio app deploy` to see sample code files in action')
+    this.log('\n')
+  }
 }
 
+const readManifest = () => {
+  try {
+    return JSON.parse(
+      fs.readFileSync(path.join(cwd, 'custom-manifest.json'), { encoding: 'utf8' })
+    )
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return {}
+    } else {
+      throw err
+    }
+  }
+}
 
-module.exports = AEMAdminGenerator
+const writeManifest = (manifest) => {
+  fs.writeJsonSync(path.join(cwd, 'custom-manifest.json'), manifest, { spaces: 2 })
+}
+
+module.exports = MainGenerator
 
