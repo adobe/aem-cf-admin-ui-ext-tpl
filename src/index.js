@@ -66,9 +66,6 @@ class MainGenerator extends Generator {
         this.log("\nCustom Manifest for Pre-generating Code")
         this.log("---------------------------------------")
         this.log(JSON.stringify(this.customManifest, null, '  '))
-        // this.log(
-        //   'Scaffolding complete. You may run the tool again at any time to add to your project.'
-        // )
       })
   }
 

@@ -2,22 +2,22 @@
  * <license header>
  */
 
-import React from "react";
-import ErrorBoundary from "react-error-boundary";
+import React from "react"
+import ErrorBoundary from "react-error-boundary"
 
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom"
 
-import ActionBarButtonIntegrationIframe from "./ActionBarButtonIntegrationIframe";
-import HeaderButtonIntegrationIframe from "./HeaderButtonIntegrationIframe";
+import IntegrationIframe from "./IntegrationIframe"
+<%# "Add import statements for modals" -%>
 <% if (customManifest.actionBarButtons) { -%>
 <% customManifest.actionBarButtons.forEach((button) => { -%>
 <% if (button.needsModal) { %>
-import <%- button.label.replace(' ', '') %>Modal from "./<%- button.label.replace(' ', '') %>Modal";
+import <%- button.label.replace(' ', '') %>Modal from "./<%- button.label.replace(' ', '') %>Modal"
 <% }})} -%>
 <% if (customManifest.headerMenuButtons) { -%>
 <% customManifest.headerMenuButtons.forEach((button) => { -%>
 <% if (button.needsModal) { %>
-import <%- button.label.replace(' ', '') %>Modal from "./<%- button.label.replace(' ', '') %>Modal";
+import <%- button.label.replace(' ', '') %>Modal from "./<%- button.label.replace(' ', '') %>Modal"
 <% }})} -%>
 
 function App() {
@@ -27,21 +27,11 @@ function App() {
       <ErrorBoundary onError={onError} FallbackComponent={fallbackComponent}>
         <Routes>
           <Route path="/">
-            <Route index element={<ActionBarButtonIntegrationIframe />} />
+            <Route index element={< IntegrationIframe />} />
             
             <Route
               path="index.html"
-              element={<ActionBarButtonIntegrationIframe />} 
-            />
-            
-            <Route
-              path="action-bar-buttons"
-              element={<ActionBarButtonIntegrationIframe />}
-            />
-            
-            <Route
-              path="header-buttons"
-              element={<HeaderButtonIntegrationIframe />}
+              element={< IntegrationIframe />} 
             />
             <% if (customManifest.actionBarButtons) { -%>
             <% customManifest.actionBarButtons.forEach((button) => { -%>
@@ -63,7 +53,7 @@ function App() {
         </Routes>
       </ErrorBoundary>
     </Router>
-  );
+  )
 
   // Methods
 
@@ -79,8 +69,8 @@ function App() {
         </h1>
         <pre>{componentStack + "\n" + error.message}</pre>
       </React.Fragment>
-    );
+    )
   }
 }
 
-export default App;
+export default App

@@ -1,6 +1,6 @@
 /*
 Copyright 2022 Adobe. All rights reserved.
-This file is licensed to you under the Apache License, Version 2.0 (the "License");
+This file is licensed to you under the Apache License, Version 2.0 (the "License")
 you may not use this file except in compliance with the License. You may obtain a copy
 of the License at http://www.apache.org/licenses/LICENSE-2.0
 Unless required by applicable law or agreed to in writing, software distributed under
@@ -26,6 +26,7 @@ const promptDocs = {
   sampleProject: "https://git.corp.adobe.com/dx-devex-acceleration/aem-headless-ui-ext-examples/tree/main-uix"
 }
 
+// Top Level prompts
 const promptTopLevelFields = (manifest) => {
   return inquirer.prompt([
     {
@@ -59,10 +60,10 @@ const promptTopLevelFields = (manifest) => {
       default: '0.0.1',
       validate(answer) {
         if (!new RegExp("^\\bv?(?:0|[1-9][0-9]*)(?:\\.(?:0|[1-9][0-9]*)){2}(?:-[\\da-z\\-]+(?:\\.[\\da-z\\-]+)*)?(?:\\+[\\da-z\\-]+(?:\\.[\\da-z\\-]+)*)?\\b$").test(answer)) {
-          return 'Required. Must match semantic versioning rules.';
+          return 'Required. Must match semantic versioning rules.'
         }
 
-        return true;
+        return true
       }
     }
   ])
@@ -81,41 +82,58 @@ const promptTopLevelFields = (manifest) => {
   })
 }
 
-const labelPrompt = () => {
-  return {
-    type: 'input',
-    name: 'label',
-    message: 'Please provide label name for the button:',
-    validate(answer) {
-      if (!answer.length) {
-        return 'Required.';
-      }
+// Main Menu prompts
+const promptMainMenu = (manifest) => {
+  const choices = []
 
-      return true;
+  choices.push(
+    new inquirer.Separator(),
+    {
+      name: 'Add a custom button to Action Bar',
+      value: nestedButtonPrompts.bind(this, manifest, 'actionBarButtons'),
     },
-  };
-};
+    {
+      name: 'Add a custom button to Header Menu',
+      value: nestedButtonPrompts.bind(this, manifest, 'headerMenuButtons'),
+    },
+    {
+      name: 'Add a runtime action (function)',
+      value: nestedActionPrompts.bind(this, manifest, 'runtimeActions')
+    },
+    new inquirer.Separator(),
+    {
+      name: "I'm done",
+      value: () => {
+        return Promise.resolve(true)
+      }
+    },
+    {
+      name: "I don't know",
+      value: promptGuideMenu.bind(this)
+    }
+  )
 
-const modalPrompt = () => {
-  return {
-    type: 'confirm',
-    name: 'needsModal',
-    message: `Do you need to show a modal for the button?`,
-    default: false
-  }
-};
-
-const helpPrompts = () => {
-  console.log(chalk.blue(chalk.bold(`Please refer to:\n  -> ${promptDocs['mainDoc']}`)) + '\n')
+  return inquirer
+    .prompt({
+      type: 'list',
+      name: 'execute',
+      message: 'What would you like to do next?',
+      choices,
+    })
+    .then((answers) => answers.execute())
+    .then((endMainMenu) => {
+      if (!endMainMenu) {
+        return promptMainMenu(manifest)
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+    })
 }
 
-const sampleProjectPrompts = () => {
-  console.log(chalk.blue(chalk.bold(`Please git clone this repository:\n  -> ${promptDocs['sampleProject']}`)) + '\n')
-}
-
+// Prompts for button metadata
 const nestedButtonPrompts = (manifest, manifestNodeName) => {
-  const questions = [labelPrompt()];
-  questions.push(modalPrompt())
+  const questions = [labelPrompt(), modalPrompt()]
 
   return inquirer
     .prompt(questions)
@@ -133,14 +151,36 @@ const nestedButtonPrompts = (manifest, manifestNodeName) => {
       manifest[manifestNodeName].push(answers)
     })
     .catch((error) => {
-      console.error(error);
-    });
-};
+      console.error(error)
+    })
+}
 
-// const nestedActionPrompts = () => {
-//   console.log(chalk.blue(chalk.bold(`Please stay tuned for this feature!`)+ '\n'))
-// };
+// Helper prompts for button metadata
+const labelPrompt = () => {
+  return {
+    type: 'input',
+    name: 'label',
+    message: 'Please provide label name for the button:',
+    validate(answer) {
+      if (!answer.length) {
+        return 'Required.'
+      }
 
+      return true
+    },
+  }
+}
+
+const modalPrompt = () => {
+  return {
+    type: 'confirm',
+    name: 'needsModal',
+    message: `Do you need to show a modal for the button?`,
+    default: false
+  }
+}
+
+// Prompts for action metadata
 const nestedActionPrompts = (manifest, manifestNodeName) => {
   let actionName = 'generic'
 
@@ -169,60 +209,13 @@ const nestedActionPrompts = (manifest, manifestNodeName) => {
     manifest[manifestNodeName].push(answer.actionName)
   })
   .catch((error) => {
-    console.error(error);
-  });
+    console.error(error)
+  })
 }
 
-const promptMainMenu = (manifest) => {
-  const choices = [];
-
-  choices.push(
-    new inquirer.Separator(),
-    {
-      name: 'Add a custom button to Action Bar',
-      value: nestedButtonPrompts.bind(this, manifest, 'actionBarButtons'),
-    },
-    {
-      name: 'Add a custom button to Header Menu',
-      value: nestedButtonPrompts.bind(this, manifest, 'headerMenuButtons'),
-    },
-    {
-      name: 'Add a runtime action (function)',
-      value: nestedActionPrompts.bind(this, manifest, 'runtimeActions')
-    },
-    new inquirer.Separator(),
-    {
-      name: "I'm done",
-      value: () => {
-        return Promise.resolve(true);
-      }
-    },
-    {
-      name: "I don't know",
-      value: promptGuideMenu.bind(this)
-    }
-  );
-
-  return inquirer
-    .prompt({
-      type: 'list',
-      name: 'execute',
-      message: 'What would you like to do next?',
-      choices,
-    })
-    .then((answers) => answers.execute())
-    .then((endMainMenu) => {
-      if (!endMainMenu) {
-        return promptMainMenu(manifest);
-      }
-    })
-    .catch((error) => {
-      console.log(error)
-    })
-};
-
+// Guide Menu Prompts
 const promptGuideMenu = (manifest) => {
-  const choices = [];
+  const choices = []
 
   choices.push(
     new inquirer.Separator(),
@@ -238,10 +231,10 @@ const promptGuideMenu = (manifest) => {
     {
       name: "Go back",
       value: () => {
-        return Promise.resolve(true);
+        return Promise.resolve(true)
       }
     }
-  );
+  )
 
   return inquirer
     .prompt({
@@ -259,7 +252,20 @@ const promptGuideMenu = (manifest) => {
     .catch((error) => {
       console.log(error)
     })
-};
+}
+
+// Helper prompts for Guide Menu
+const helpPrompts = () => {
+  console.log(chalk.blue(chalk.bold(`Please refer to:\n  -> ${promptDocs['mainDoc']}`)) + '\n')
+}
+
+const sampleProjectPrompts = () => {
+  console.log(chalk.blue(chalk.bold(`Please git clone this repository:\n  -> ${promptDocs['sampleProject']}`)) + '\n')
+}
+
+const dummyPrompt = () => {
+  console.log(chalk.blue(chalk.bold(`Please stay tuned for this feature!`)+ '\n'))
+}
 
 module.exports = {
   briefOverviews,

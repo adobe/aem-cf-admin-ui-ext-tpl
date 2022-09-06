@@ -12,7 +12,8 @@ governing permissions and limitations under the License.
 const path = require('path')
 const Generator = require('yeoman-generator')
 
-const { utils } = require('@adobe/generator-app-common-lib')
+const { utils, constants } = require('@adobe/generator-app-common-lib')
+const { commonDependencyVersions } = constants
 
 class CFAdminUIGenerator extends Generator {
   constructor (args, opts) {
@@ -35,16 +36,18 @@ class CFAdminUIGenerator extends Generator {
     const destFolder = this.options['web-src-folder']
     this.sourceRoot(path.join(__dirname, './templates/web'))
 
+    // Copy all the static files
     this.fs.copyTpl(
       this.templatePath('./**/*'),
       this.destinationPath(destFolder),
       this.props
     )
 
+    // Dynamically generate react component files to display modal for Action Bar buttons
     if (this.props.customManifest.actionBarButtons) {
       this.props.customManifest.actionBarButtons.forEach((button) => {
         if (button.needsModal) {
-          const modalFileName = button.label.replace(' ', '') + 'Modal'
+          const modalFileName = button.label.replace(/ /g, '') + 'Modal'
           this.fs.copyTpl(
             this.templatePath('../_shared/ActionBarButtonModal.js'),
             this.destinationPath(path.join(destFolder, `./src/components/${modalFileName}.js`)), {
@@ -55,10 +58,11 @@ class CFAdminUIGenerator extends Generator {
       })
     }
     
+    // Dynamically generate react component files to display modal for Header Menu buttons
     if (this.props.customManifest.headerMenuButtons) {
       this.props.customManifest.headerMenuButtons.forEach((button) => {
         if (button.needsModal) {
-          const modalFileName = button.label.replace(' ', '') + 'Modal'
+          const modalFileName = button.label.replace(/ /g, '') + 'Modal'
           this.fs.copyTpl(
             this.templatePath('../_shared/HeaderMenuButtonModal.js'),
             this.destinationPath(path.join(destFolder, `./src/components/${modalFileName}.js`)), {
@@ -79,7 +83,7 @@ class CFAdminUIGenerator extends Generator {
       '@adobe/aio-sdk': commonDependencyVersions['@adobe/aio-sdk'],
       '@adobe/exc-app': '^0.2.21',
       '@adobe/react-spectrum': '^3.4.0',
-      '@adobe/uix-guest': '^0.2.3',
+      // '@adobe/uix-guest': '^0.2.3',
       '@react-spectrum/list': '^3.0.0-rc.0',
       '@spectrum-icons/workflow': '^3.2.0',
       'core-js': '^3.6.4',
