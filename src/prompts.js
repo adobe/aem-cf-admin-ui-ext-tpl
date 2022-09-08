@@ -32,7 +32,7 @@ const promptTopLevelFields = (manifest) => {
     {
       type: 'input',
       name: 'displayName',
-      message: 'What do you want to name your extension?',
+      message: "What do you want to name your extension?",
       validate(answer) {
         if (!answer.length) {
           return 'Required.'
@@ -44,7 +44,7 @@ const promptTopLevelFields = (manifest) => {
     {
       type: 'input',
       name: 'description',
-      message: 'Please provide a short description of your extension:',
+      message: "Please provide a short description of your extension:",
       validate(answer) {
         if (!answer.length) {
           return 'Required.'
@@ -56,7 +56,7 @@ const promptTopLevelFields = (manifest) => {
     {
       type: 'input',
       name: 'version',
-      message: 'What version would you like to start with?',
+      message: "What version would you like to start with?",
       default: '0.0.1',
       validate(answer) {
         if (!new RegExp("^\\bv?(?:0|[1-9][0-9]*)(?:\\.(?:0|[1-9][0-9]*)){2}(?:-[\\da-z\\-]+(?:\\.[\\da-z\\-]+)*)?(?:\\+[\\da-z\\-]+(?:\\.[\\da-z\\-]+)*)?\\b$").test(answer)) {
@@ -89,15 +89,15 @@ const promptMainMenu = (manifest) => {
   choices.push(
     new inquirer.Separator(),
     {
-      name: 'Add a custom button to Action Bar',
+      name: "Add a custom button to Action Bar",
       value: nestedButtonPrompts.bind(this, manifest, 'actionBarButtons'),
     },
     {
-      name: 'Add a custom button to Header Menu',
+      name: "Add a custom button to Header Menu",
       value: nestedButtonPrompts.bind(this, manifest, 'headerMenuButtons'),
     },
     {
-      name: 'Add a runtime action (function)',
+      name: "Add server-side handler",
       value: nestedActionPrompts.bind(this, manifest, 'runtimeActions')
     },
     new inquirer.Separator(),
@@ -117,7 +117,7 @@ const promptMainMenu = (manifest) => {
     .prompt({
       type: 'list',
       name: 'execute',
-      message: 'What would you like to do next?',
+      message: "What would you like to do next?",
       choices,
     })
     .then((answers) => answers.execute())
@@ -160,7 +160,7 @@ const labelPrompt = () => {
   return {
     type: 'input',
     name: 'label',
-    message: 'Please provide label name for the button:',
+    message: "Please provide label name for the button:",
     validate(answer) {
       if (!answer.length) {
         return 'Required.'
@@ -175,7 +175,7 @@ const modalPrompt = () => {
   return {
     type: 'confirm',
     name: 'needsModal',
-    message: `Do you need to show a modal for the button?`,
+    message: "Do you need to show a modal for the button?",
     default: false
   }
 }
@@ -187,7 +187,7 @@ const nestedActionPrompts = (manifest, manifestNodeName) => {
   return inquirer.prompt({
     type: 'input',
     name: 'actionName',
-    message: `Adobe I/O Runtime lets you invoke serverless code on demand. How would you like to name this action?`,
+    message: "Adobe I/O Runtime lets you invoke serverless code on demand. How would you like to name this action?",
     default: actionName,
     validate (input) {
     // Must be a valid openwhisk action name, this is a simplified set see:
@@ -240,7 +240,7 @@ const promptGuideMenu = (manifest) => {
     .prompt({
       type: 'list',
       name: 'execute',
-      message: 'What about this then?',
+      message: "What about this then?",
       choices,
     })
     .then((answers) => answers.execute())

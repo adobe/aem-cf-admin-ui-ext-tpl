@@ -7,46 +7,43 @@ import ErrorBoundary from "react-error-boundary"
 
 import { HashRouter as Router, Routes, Route } from "react-router-dom"
 
-import IntegrationIframe from "./IntegrationIframe"
+import ExtensionRegistration from "./ExtensionRegistration"
 <%# "Add import statements for modals" -%>
-<% if (customManifest.actionBarButtons) { -%>
-<% customManifest.actionBarButtons.forEach((button) => { -%>
-<% if (button.needsModal) { %>
-import <%- button.label.replace(' ', '') %>Modal from "./<%- button.label.replace(' ', '') %>Modal"
-<% }})} -%>
-<% if (customManifest.headerMenuButtons) { -%>
-<% customManifest.headerMenuButtons.forEach((button) => { -%>
-<% if (button.needsModal) { %>
-import <%- button.label.replace(' ', '') %>Modal from "./<%- button.label.replace(' ', '') %>Modal"
-<% }})} -%>
+<% const actionBarButtons = extensionManifest.actionBarButtons || [] -%>
+<% const headerMenuButtons = extensionManifest.headerMenuButtons || [] -%>
+<% const allCustomButtons = actionBarButtons.concat(headerMenuButtons) -%>
+  <% allCustomButtons.forEach((button) => { -%>
+    <% if (button.needsModal) { -%>
+      <% const modalFileName = button.label.replace(/ /g, '') + 'Modal' %>
+import <%- modalFileName %> from "./<%- modalFileName %>"
+<% }}) -%>
 
 function App() {
-  // TODO: add NoFoundPage component
   return (
     <Router>
       <ErrorBoundary onError={onError} FallbackComponent={fallbackComponent}>
         <Routes>
           <Route path="/">
-            <Route index element={< IntegrationIframe />} />
+            <Route index element={<ExtensionRegistration />} />
             
             <Route
-              path="index.html"
-              element={< IntegrationIframe />} 
+              exact path="index.html"
+              element={<ExtensionRegistration />} 
             />
-            <% if (customManifest.actionBarButtons) { -%>
-            <% customManifest.actionBarButtons.forEach((button) => { -%>
-            <% if (button.needsModal) { %>
+            <% if (extensionManifest.actionBarButtons) { -%>
+              <% extensionManifest.actionBarButtons.forEach((button) => { -%>
+                <% if (button.needsModal) { %>
             <Route
-              path="content-fragment/:fragmentId/<%- button.id %>-modal"
-              element={< <%- button.label.replace(' ', '') %>Modal />}
+              exact path="content-fragment/:fragmentId/<%- button.id %>-modal"
+              element={<<%- button.label.replace(' ', '') %>Modal />}
             />
             <% }})} -%>
-            <% if (customManifest.headerMenuButtons) { -%>
-            <% customManifest.headerMenuButtons.forEach((button) => { -%>
-            <% if (button.needsModal) { %>
+            <% if (extensionManifest.headerMenuButtons) { -%>
+              <% extensionManifest.headerMenuButtons.forEach((button) => { -%>
+                <% if (button.needsModal) { %>
             <Route
-              path="<%- button.id %>-modal"
-              element={< <%- button.label.replace(' ', '') %>Modal />}
+              exact path="<%- button.id %>-modal"
+              element={<<%- button.label.replace(' ', '') %>Modal />}
             />
             <% }})} %>
           </Route>

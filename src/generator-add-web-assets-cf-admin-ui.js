@@ -25,7 +25,7 @@ class CFAdminUIGenerator extends Generator {
 
     // props are used by templates
     this.props = {}
-    this.props.customManifest = this.options['custom-manifest']
+    this.props.extensionManifest = this.options['extension-manifest']
     this.props.projectName = utils.readPackageJson(this).name
   }
 
@@ -33,45 +33,18 @@ class CFAdminUIGenerator extends Generator {
   // async prompting () {}
 
   writing () {
-    const destFolder = this.options['web-src-folder']
+    this.destFolder = this.options['web-src-folder']
     this.sourceRoot(path.join(__dirname, './templates/web'))
 
     // Copy all the static files
     this.fs.copyTpl(
       this.templatePath('./**/*'),
-      this.destinationPath(destFolder),
+      this.destinationPath(this.destFolder),
       this.props
     )
 
-    // Dynamically generate react component files to display modal for Action Bar buttons
-    if (this.props.customManifest.actionBarButtons) {
-      this.props.customManifest.actionBarButtons.forEach((button) => {
-        if (button.needsModal) {
-          const modalFileName = button.label.replace(/ /g, '') + 'Modal'
-          this.fs.copyTpl(
-            this.templatePath('../_shared/ActionBarButtonModal.js'),
-            this.destinationPath(path.join(destFolder, `./src/components/${modalFileName}.js`)), {
-              functionName: modalFileName
-            }
-          )
-        }
-      })
-    }
-    
-    // Dynamically generate react component files to display modal for Header Menu buttons
-    if (this.props.customManifest.headerMenuButtons) {
-      this.props.customManifest.headerMenuButtons.forEach((button) => {
-        if (button.needsModal) {
-          const modalFileName = button.label.replace(/ /g, '') + 'Modal'
-          this.fs.copyTpl(
-            this.templatePath('../_shared/HeaderMenuButtonModal.js'),
-            this.destinationPath(path.join(destFolder, `./src/components/${modalFileName}.js`)), {
-              functionName: modalFileName
-            }
-          )
-        }
-      })
-    }
+    // Generate React component files for custom buttons that needs to show a modal
+    this._generateModalFiles()
 
     // add .babelrc
     /// NOTE this is a global file and might conflict
@@ -108,6 +81,24 @@ class CFAdminUIGenerator extends Generator {
       },
       true
     )
+  }
+
+  _generateModalFiles() {
+    const actionBarButtons = this.props.extensionManifest.actionBarButtons || []
+    const headerMenuButtons = this.props.extensionManifest.headerMenuButtons || []
+    const allCustomButtons = actionBarButtons.concat(headerMenuButtons)
+
+    allCustomButtons.forEach((button) => {
+      if (button.needsModal) {
+        const modalFileName = button.label.replace(/ /g, '') + 'Modal'
+        this.fs.copyTpl(
+          this.templatePath('../_shared/stub-generic-modal.js'),
+          this.destinationPath(path.join(this.destFolder, `./src/components/${modalFileName}.js`)), {
+            functionName: modalFileName
+          }
+        )
+      }
+    })
   }
 }
 

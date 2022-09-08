@@ -20,6 +20,9 @@
     "stdout-stderr": "^0.1.13",
     "yeoman-test": "^6.3.0"
   },
+  "peerDependencies": {
+    "@adobe/aio-cli-plugin-app-templates": "^1.0.0"
+  },
   "scripts": {
     "test": "jest ./test"
   }

@@ -13,7 +13,7 @@ import {
 } from "@adobe/react-spectrum";
 import { connectToParent } from "penpal";
 
-function <%- functionName %> () {
+export default <%- functionName %> () {
   const [api, setApi] = useState(undefined);
   const [authConfig, setAuthConfig] = useState(undefined);
   useEffect(() => {
@@ -42,5 +42,3 @@ function <%- functionName %> () {
     </Provider>
   );
 }
-
-export default <%- functionName %>

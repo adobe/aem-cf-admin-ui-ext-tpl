@@ -20,7 +20,9 @@ const webAssets = require('./generator-add-web-assets-cf-admin-ui')
 const {constants, utils} = require('@adobe/generator-app-common-lib')
 const { runtimeManifestKey } = constants
 const { briefOverviews, promptTopLevelFields, promptMainMenu } = require('./prompts')
-const cwd = process.cwd()
+
+const CURRENT_WORKING_DIR = process.cwd()
+const EXTENSION_MANIFEST_FILE = 'extension-manifest.json'
 
 /*
 'initializing',
@@ -43,36 +45,34 @@ class MainGenerator extends Generator {
   
   initializing () {
     // all paths are relative to root
-    this.extFolder = 'src/dx-excshell-1/cf-admin'
+    this.extFolder = 'src/aem/cf-console-admin-1'
     this.actionFolder = path.join(this.extFolder, 'actions')
     
     // todo support multi UI (could be one for each operation)
     this.webSrcFolder = path.join(this.extFolder, 'web-src')
     this.extConfigPath = path.join(this.extFolder, 'ext.config.yaml')
-    this.configName = 'dx/excshell/1'
+    this.configName = 'aem/cf-console-admin/1'
     // this.extFolder = path.join(this.extFolder, 'item-menu')
 
-    this.customManifest = readManifest()
+    this.extensionManifest = readManifest()
   }
 
   async prompting () {
-    // const customManifest = readManifest()
-
     this.log(briefOverviews['templateInfo'])
-    await promptTopLevelFields(this.customManifest)
-      .then(() => promptMainMenu(this.customManifest))
-      .then(() => writeManifest(this.customManifest))
+    await promptTopLevelFields(this.extensionManifest)
+      .then(() => promptMainMenu(this.extensionManifest))
+      .then(() => writeManifest(this.extensionManifest))
       .then(() => {
-        this.log("\nCustom Manifest for Pre-generating Code")
+        this.log("\Extension Manifest for Pre-generating Code")
         this.log("---------------------------------------")
-        this.log(JSON.stringify(this.customManifest, null, '  '))
+        this.log(JSON.stringify(this.extensionManifest, null, '  '))
       })
   }
 
   async writing () {
     // generate the generic action
-    if (this.customManifest.runtimeActions) {
-      this.customManifest.runtimeActions.forEach((actionName) => {
+    if (this.extensionManifest.runtimeActions) {
+      this.extensionManifest.runtimeActions.forEach((actionName) => {
         this.composeWith({
           Generator: runtimeAction,
           path: 'unknown'
@@ -97,7 +97,7 @@ class MainGenerator extends Generator {
       'skip-prompt': this.options['skip-prompt'],
       'web-src-folder': this.webSrcFolder,
       'config-path': this.extConfigPath,
-      'custom-manifest': this.customManifest
+      'extension-manifest': this.extensionManifest
     })
 
     const unixExtConfigPath = upath.toUnix(this.extConfigPath)
@@ -134,8 +134,8 @@ class MainGenerator extends Generator {
 
   async conflicts () {
     const content = utils.readPackageJson(this)
-    content['description'] = this.customManifest['description']
-    content['version'] = this.customManifest['version']
+    content['description'] = this.extensionManifest['description']
+    content['version'] = this.extensionManifest['version']
     utils.writePackageJson(this, content)
   }
 
@@ -152,7 +152,7 @@ class MainGenerator extends Generator {
 const readManifest = () => {
   try {
     return JSON.parse(
-      fs.readFileSync(path.join(cwd, 'custom-manifest.json'), { encoding: 'utf8' })
+      fs.readFileSync(path.join(CURRENT_WORKING_DIR, EXTENSION_MANIFEST_FILE), { encoding: 'utf8' })
     )
   } catch (err) {
     if (err.code === 'ENOENT') {
@@ -164,7 +164,7 @@ const readManifest = () => {
 }
 
 const writeManifest = (manifest) => {
-  fs.writeJsonSync(path.join(cwd, 'custom-manifest.json'), manifest, { spaces: 2 })
+  fs.writeJsonSync(path.join(CURRENT_WORKING_DIR, EXTENSION_MANIFEST_FILE), manifest, { spaces: 2 })
 }
 
 module.exports = MainGenerator
