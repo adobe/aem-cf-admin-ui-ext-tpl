@@ -2,14 +2,16 @@
   "name": "@adobe/aem-cf-admin-ui-tpl",
   "version": "0.0.1",
   "main": "src/index.js",
-  "description": "AIO CLI UI Extension Temaplate for AEM Content Fragment Console",
+  "description": "Extensibility Template for AEM Content Fragment Admin UI",
   "keywords": [
-    "ecosystem:aio-app-builder-templates"
+    "aio-app-builder-templates"
   ],
   "dependencies": {
     "@adobe/generator-add-action-generic": "^0.2.3",
-    "@adobe/generator-add-web-assets-exc-react": "^0.2.2",
     "@adobe/generator-app-common-lib": "^0.3.1",
+    "chalk": "^4.0.0",
+    "fs-extra": "^10.1.0",
+    "slugify": "^1.6.5",
     "yeoman-environment": "^3",
     "yeoman-generator": "^5"
   },
@@ -17,6 +19,9 @@
     "jest": "^27",
     "stdout-stderr": "^0.1.13",
     "yeoman-test": "^6.3.0"
+  },
+  "peerDependencies": {
+    "@adobe/aio-cli-plugin-app-templates": "^1.0.0"
   },
   "scripts": {
     "test": "jest ./test"
