@@ -12,6 +12,13 @@ governing permissions and limitations under the License.
 const inquirer = require('inquirer')
 const slugify = require('slugify')
 const chalk = require('chalk')
+const path = require('path')
+
+const { readManifest } = require('./utils')
+
+const SLACK_DEMO_MANIFEST_PATH = path.join(__dirname, './templates/slack-demo/extension-manifest.json')
+
+var exitMenu = false
 
 const briefOverviews = {
   templateInfo: `\nAEM Content Fragment Admin UI Template Overview:\n
@@ -109,7 +116,7 @@ const promptMainMenu = (manifest) => {
     },
     {
       name: "I don't know",
-      value: promptGuideMenu.bind(this)
+      value: promptGuideMenu.bind(this, manifest)
     }
   )
 
@@ -122,7 +129,7 @@ const promptMainMenu = (manifest) => {
     })
     .then((answers) => answers.execute())
     .then((endMainMenu) => {
-      if (!endMainMenu) {
+      if (!endMainMenu && !exitMenu) {
         return promptMainMenu(manifest)
       }
     })
@@ -206,7 +213,10 @@ const nestedActionPrompts = (manifest, manifestNodeName) => {
   })
   .then((answer) => {
     manifest[manifestNodeName] = manifest[manifestNodeName] || []
-    manifest[manifestNodeName].push(answer.actionName)
+    // manifest[manifestNodeName].push(answer.actionName)
+    manifest[manifestNodeName].push({
+      'name': answer.actionName
+    })
   })
   .catch((error) => {
     console.error(error)
@@ -221,7 +231,21 @@ const promptGuideMenu = (manifest) => {
     new inquirer.Separator(),
     {
       name: "Try a demo project",
-      value: sampleProjectPrompts.bind(this)
+      value: () => {
+        const slackDemoManifest = readManifest(SLACK_DEMO_MANIFEST_PATH)
+
+        // Update the extension manifest object
+        manifest['displayName'] = slackDemoManifest['displayName'] || null
+        manifest['description'] = slackDemoManifest['description'] || null
+        manifest['version'] = slackDemoManifest['version'] || null
+        manifest['templateFolder'] = slackDemoManifest['templateFolder'] || null
+        manifest['actionBarButtons'] = slackDemoManifest['actionBarButtons'] || null
+        manifest['headerMenuButtons'] = slackDemoManifest['headerMenuButtons'] || null
+        manifest['runtimeActions'] = slackDemoManifest['runtimeActions'] || null
+        exitMenu = true
+
+        return Promise.resolve(true)
+      }
     },
     {
       name: "Find some help",
@@ -266,6 +290,20 @@ const sampleProjectPrompts = () => {
 const dummyPrompt = () => {
   console.log(chalk.blue(chalk.bold(`Please stay tuned for this feature!`)+ '\n'))
 }
+
+// const readManifest = (manifestPath) => {
+//   try {
+//     return JSON.parse(
+//       fs.readFileSync(manifestPath, { encoding: 'utf8' })
+//     )
+//   } catch (err) {
+//     if (err.code === 'ENOENT') {
+//       return {}
+//     } else {
+//       throw err
+//     }
+//   }
+// }
 
 module.exports = {
   briefOverviews,

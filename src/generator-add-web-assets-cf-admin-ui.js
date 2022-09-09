@@ -27,6 +27,7 @@ class CFAdminUIGenerator extends Generator {
     this.props = {}
     this.props.extensionManifest = this.options['extension-manifest']
     this.props.projectName = utils.readPackageJson(this).name
+    this.props['templateFolder'] = this.options['template-folder']
   }
 
   // nothing for now
@@ -45,6 +46,9 @@ class CFAdminUIGenerator extends Generator {
 
     // Generate React component files for custom buttons that needs to show a modal
     this._generateModalFiles()
+    
+    // Generate Extension registration according to the manifest
+    this._generateExtensionRegistration()
 
     // add .babelrc
     /// NOTE this is a global file and might conflict
@@ -83,7 +87,31 @@ class CFAdminUIGenerator extends Generator {
     )
   }
 
+  _generateExtensionRegistration() {
+    // Generic Project
+    var relativeTemplatePath = '../_shared/stub-generic-extension-registration.js'
+    
+    // Demo Project
+    if (this.props.templateFolder) {
+      relativeTemplatePath = `../${this.props.templateFolder}/stub-extension-registration.js`
+    }
+
+    this.fs.copyTpl(
+      this.templatePath(relativeTemplatePath),
+      this.destinationPath(path.join(this.destFolder, `./src/components/ExtensionRegistration.js`)),
+      this.props
+    )
+  }
+
   _generateModalFiles() {
+    // Generic Project
+    var relativeTemplatePath = '../_shared/stub-generic-modal.js'
+    
+    // Demo Project
+    if (this.props.templateFolder) {
+      relativeTemplatePath = `../${this.props.templateFolder}/stub-modal.js`
+    }
+
     const actionBarButtons = this.props.extensionManifest.actionBarButtons || []
     const headerMenuButtons = this.props.extensionManifest.headerMenuButtons || []
     const allCustomButtons = actionBarButtons.concat(headerMenuButtons)
@@ -92,7 +120,7 @@ class CFAdminUIGenerator extends Generator {
       if (button.needsModal) {
         const modalFileName = button.label.replace(/ /g, '') + 'Modal'
         this.fs.copyTpl(
-          this.templatePath('../_shared/stub-generic-modal.js'),
+          this.templatePath(relativeTemplatePath),
           this.destinationPath(path.join(this.destFolder, `./src/components/${modalFileName}.js`)), {
             functionName: modalFileName
           }

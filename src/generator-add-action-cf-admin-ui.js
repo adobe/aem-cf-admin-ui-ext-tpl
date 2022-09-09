@@ -11,7 +11,7 @@ governing permissions and limitations under the License.
 
 const path = require('path')
 const { constants, ActionGenerator, commonTemplates } = require('@adobe/generator-app-common-lib')
-const { commonDependencyVersions } = constants
+// const { commonDependencyVersions } = constants
 
 class CFAdminUIActionGenerator extends ActionGenerator {
   constructor (args, opts) {
@@ -27,7 +27,7 @@ class CFAdminUIActionGenerator extends ActionGenerator {
 const { Core } = require('@adobe/aio-sdk')`,
 
       responseCode: `// replace this with the api you want to access
-    const apiEndpoint = \${params.API_ENDPOINT}
+    const apiEndpoint = \`\${params.API_ENDPOINT}\`
     // fetch content from external api endpoint
     const res = await fetch(apiEndpoint)
     if (!res.ok) {
@@ -41,6 +41,7 @@ const { Core } = require('@adobe/aio-sdk')`,
     }
 
     this.props['actionName'] = this.options['action-name']
+    this.props['templateFolder'] = this.options['template-folder']
   }
 
   // async prompting () {
@@ -50,26 +51,42 @@ const { Core } = require('@adobe/aio-sdk')`,
   writing () {
     this.sourceRoot(path.join(__dirname, '.'))
 
-    this.addAction(this.props.actionName, commonTemplates['stub-action'], {
-      // testFile: './templates/fetchExample.test.js',
-      sharedLibFile: commonTemplates.utils,
-      sharedLibTestFile: commonTemplates['utils.test'],
-      e2eTestFile: commonTemplates['stub-action.e2e'],
+    // Generic Project
+    var templates = commonTemplates
+    var templateInputs = { 
+      LOG_LEVEL: 'debug',
+      API_ENDPOINT: '$API_ENDPOINT'
+    }
+    var templateDotEnvVars = ['API_ENDPOINT']
+    
+    // Demo Project
+    if (this.props.templateFolder) {
+      templates = require(`./templates/${this.props.templateFolder}`)
+      templateInputs = {
+        LOG_LEVEL: 'debug',
+        SLACK_WEBHOOK: '$SLACK_WEBHOOOK',
+        SLACK_CHANNEL: '$SLACK_CHANNEL'
+      }
+      templateDotEnvVars = ['SLACK_WEBHOOOK', 'SLACK_CHANNEL']
+    }
+
+    this.addAction(this.props.actionName, templates['stub-action'], {
+      testFile: templates['stub-action.test'],
+      sharedLibFile: templates.utils,
+      sharedLibTestFile: templates['utils.test'],
+      e2eTestFile: templates['stub-action.e2e'],
       tplContext: this.props,
       dependencies: {
         'node-fetch': '^2.6.0'
       },
       actionManifestConfig: {
-        inputs: { 
-          LOG_LEVEL: 'debug',
-          API_ENDPOINT: '$API_ENDPOINT',
-        },
+        inputs: templateInputs,
         annotations: { 
           final: true, 
           'require-adobe-auth': false 
         } // makes sure loglevel cannot be overwritten by request param
       },
-      dotenvStub: { label: 'Place your local environment variables here', vars: ['API_ENDPOINT'] }
+      dotenvStub: { label: 'Place your local environment variables here', vars: templateDotEnvVars }
     })
   }
 }
