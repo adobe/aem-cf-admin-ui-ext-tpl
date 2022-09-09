@@ -5,6 +5,6 @@ const Generator = require('yeoman-generator')
 
 describe('prototype', () => {
   test('exports a yeoman generator', () => {
-    expect(cfConsoleAdmin.prototype).toBeInstanceOf(Generator)
+    expect(require(cfConsoleAdmin).prototype).toBeInstanceOf(Generator)
   })
 })
