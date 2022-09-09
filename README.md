@@ -10,7 +10,7 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 -->
 
-# aem-cf-admin-ui-ext-tpl
+# @adobe/aem-cf-admin-ui-ext-tpl
 
 Extensibility Template for AEM Content Fragment Admin UI
 
