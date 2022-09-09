@@ -153,7 +153,7 @@ const nestedButtonPrompts = (manifest, manifestNodeName) => {
         locale: 'vi',      // language code of the locale to use
         trim: true         // trim leading and trailing replacement chars, defaults to `true`
       })
-      console.log(JSON.stringify(answers, null, '  '))
+      // console.log(JSON.stringify(answers, null, '  '))
       manifest[manifestNodeName] = manifest[manifestNodeName] || []
       manifest[manifestNodeName].push(answers)
     })
