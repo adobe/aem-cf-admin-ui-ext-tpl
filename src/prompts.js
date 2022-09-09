@@ -29,8 +29,8 @@ const briefOverviews = {
 }
 
 const promptDocs = {
-  mainDoc: "https://wiki.corp.adobe.com/pages/viewpage.action?spaceKey=ODIN&title=Content+Fragment+Admin+UI+-+Extension+points",
-  sampleProject: "https://git.corp.adobe.com/dx-devex-acceleration/aem-headless-ui-ext-examples/tree/main-uix"
+  mainDoc: "https://www.example.com/main-doc",
+  sampleProject: "https://www.example.com/project"
 }
 
 // Top Level prompts
