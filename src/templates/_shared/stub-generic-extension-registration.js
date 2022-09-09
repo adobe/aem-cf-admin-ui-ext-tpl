@@ -41,7 +41,7 @@ function ExtensionRegistration() {
         <% }}) %>
       }
     },
-    <% } %>
+    <% } -%>
     <% if (extensionManifest.headerMenuButtons) { %>
     headerMenu: {
       getButton() {

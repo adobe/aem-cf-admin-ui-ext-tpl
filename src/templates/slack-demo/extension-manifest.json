@@ -1,0 +1,25 @@
+{
+  "displayName": "Slack Demo",
+  "description": "Demo to showcase a custom button that sends the selected Content Fragments info to Slack",
+  "version": "0.0.1",
+  "templateFolder": "slack-demo",
+  "actionBarButtons": [
+    {
+      "label": "Send to Slack",
+      "needsModal": true,
+      "id": "send-to-slack"
+    }
+  ],
+  "headerMenuButtons": [
+    {
+      "label": "Test Slack",
+      "needsModal": true,
+      "id": "test-slack"
+    }
+  ],
+  "runtimeActions": [
+    {
+      "name": "notify-slack"
+    }
+  ]
+}

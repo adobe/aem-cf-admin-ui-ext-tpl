@@ -20,9 +20,9 @@ const webAssets = require('./generator-add-web-assets-cf-admin-ui')
 const {constants, utils} = require('@adobe/generator-app-common-lib')
 const { runtimeManifestKey } = constants
 const { briefOverviews, promptTopLevelFields, promptMainMenu } = require('./prompts')
+const { readManifest, writeManifest } = require('./utils')
 
-const CURRENT_WORKING_DIR = process.cwd()
-const EXTENSION_MANIFEST_FILE = 'extension-manifest.json'
+const EXTENSION_MANIFEST_PATH = path.join(process.cwd(), 'extension-manifest.json')
 
 /*
 'initializing',
@@ -54,14 +54,14 @@ class MainGenerator extends Generator {
     this.configName = 'aem/cf-console-admin/1'
     // this.extFolder = path.join(this.extFolder, 'item-menu')
 
-    this.extensionManifest = readManifest()
+    this.extensionManifest = readManifest(EXTENSION_MANIFEST_PATH)
   }
 
   async prompting () {
     this.log(briefOverviews['templateInfo'])
     await promptTopLevelFields(this.extensionManifest)
       .then(() => promptMainMenu(this.extensionManifest))
-      .then(() => writeManifest(this.extensionManifest))
+      .then(() => writeManifest(this.extensionManifest, EXTENSION_MANIFEST_PATH))
       .then(() => {
         this.log("\Extension Manifest for Pre-generating Code")
         this.log("---------------------------------------")
@@ -72,7 +72,7 @@ class MainGenerator extends Generator {
   async writing () {
     // generate the generic action
     if (this.extensionManifest.runtimeActions) {
-      this.extensionManifest.runtimeActions.forEach((actionName) => {
+      this.extensionManifest.runtimeActions.forEach((action) => {
         this.composeWith({
           Generator: runtimeAction,
           path: 'unknown'
@@ -83,7 +83,8 @@ class MainGenerator extends Generator {
           'action-folder': this.actionFolder,
           'config-path': this.extConfigPath,
           'full-key-to-manifest': runtimeManifestKey,
-          'action-name': actionName
+          'action-name': action.name,
+          'template-folder': this.extensionManifest.templateFolder
         })
       })
     }
@@ -97,7 +98,8 @@ class MainGenerator extends Generator {
       'skip-prompt': this.options['skip-prompt'],
       'web-src-folder': this.webSrcFolder,
       'config-path': this.extConfigPath,
-      'extension-manifest': this.extensionManifest
+      'extension-manifest': this.extensionManifest,
+      'template-folder': this.extensionManifest.templateFolder
     })
 
     const unixExtConfigPath = upath.toUnix(this.extConfigPath)
@@ -149,23 +151,23 @@ class MainGenerator extends Generator {
   }
 }
 
-const readManifest = () => {
-  try {
-    return JSON.parse(
-      fs.readFileSync(path.join(CURRENT_WORKING_DIR, EXTENSION_MANIFEST_FILE), { encoding: 'utf8' })
-    )
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      return {}
-    } else {
-      throw err
-    }
-  }
-}
+// const readManifest = (manifestPath) => {
+//   try {
+//     return JSON.parse(
+//       fs.readFileSync(manifestPath, { encoding: 'utf8' })
+//     )
+//   } catch (err) {
+//     if (err.code === 'ENOENT') {
+//       return {}
+//     } else {
+//       throw err
+//     }
+//   }
+// }
 
-const writeManifest = (manifest) => {
-  fs.writeJsonSync(path.join(CURRENT_WORKING_DIR, EXTENSION_MANIFEST_FILE), manifest, { spaces: 2 })
-}
+// const writeManifest = (manifest, manifestPath) => {
+//   fs.writeJsonSync(manifestPath, manifest, { spaces: 2 })
+// }
 
 module.exports = MainGenerator
 

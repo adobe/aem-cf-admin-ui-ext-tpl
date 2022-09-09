@@ -1,5 +1,5 @@
 /*
- * <license header> Generic Modal
+ * <license header> Slack Modal
  */
 
 import React, {useEffect, useState} from "react";
