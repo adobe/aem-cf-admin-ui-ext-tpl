@@ -3,9 +3,14 @@
   "version": "1.0.0-beta.1",
   "main": "src/index.js",
   "description": "Extensibility Template for AEM Content Fragment Admin UI",
+  "engines": {
+    "node": "^14"
+  },
   "keywords": [
-    "aio-app-builder-templates"
+    "ecosystem:aio-app-builder-templates"
   ],
+  "author": "Adobe Inc.",
+  "license": "Apache-2.0",
   "dependencies": {
     "@adobe/generator-add-action-generic": "^0.2.3",
     "@adobe/generator-app-common-lib": "^0.3.1",
