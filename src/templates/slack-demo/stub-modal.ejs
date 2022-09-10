@@ -1,5 +1,5 @@
 /*
- * <license header> Generic Modal
+ * <license header> Slack Modal
  */
 
 import React, {useEffect, useState} from "react";
@@ -33,8 +33,8 @@ export default <%- functionName %> () {
         <Text>Header button modal content</Text>
         <ButtonGroup align="end" width="100%">
           <Button variant="secondary"
-                  onPress={() => api.closeModal()}
-                  margin="size-175">
+              onPress={ () => api.closeModal() }
+              margin="size-175">
               Cancel
           </Button>
         </ButtonGroup>

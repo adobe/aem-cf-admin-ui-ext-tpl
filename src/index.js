@@ -84,7 +84,7 @@ class MainGenerator extends Generator {
           'config-path': this.extConfigPath,
           'full-key-to-manifest': runtimeManifestKey,
           'action-name': action.name,
-          'template-folder': this.extensionManifest.templateFolder
+          'extension-manifest': this.extensionManifest
         })
       })
     }
@@ -99,7 +99,6 @@ class MainGenerator extends Generator {
       'web-src-folder': this.webSrcFolder,
       'config-path': this.extConfigPath,
       'extension-manifest': this.extensionManifest,
-      'template-folder': this.extensionManifest.templateFolder
     })
 
     const unixExtConfigPath = upath.toUnix(this.extConfigPath)
@@ -150,24 +149,6 @@ class MainGenerator extends Generator {
     this.log('\n')
   }
 }
-
-// const readManifest = (manifestPath) => {
-//   try {
-//     return JSON.parse(
-//       fs.readFileSync(manifestPath, { encoding: 'utf8' })
-//     )
-//   } catch (err) {
-//     if (err.code === 'ENOENT') {
-//       return {}
-//     } else {
-//       throw err
-//     }
-//   }
-// }
-
-// const writeManifest = (manifest, manifestPath) => {
-//   fs.writeJsonSync(manifestPath, manifest, { spaces: 2 })
-// }
 
 module.exports = MainGenerator
 
