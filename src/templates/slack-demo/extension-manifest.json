@@ -21,5 +21,11 @@
     {
       "name": "notify-slack"
     }
-  ]
+  ],
+  "templateInputs": {
+    "LOG_LEVEL": "debug",
+    "SLACK_WEBHOOK": "$SLACK_WEBHOOOK",
+    "SLACK_CHANNEL": "$SLACK_CHANNEL"
+  },
+  "templateDotEnvVars": ["SLACK_WEBHOOOK", "SLACK_CHANNEL"]
 }

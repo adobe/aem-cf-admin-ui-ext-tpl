@@ -25,9 +25,8 @@ class CFAdminUIGenerator extends Generator {
 
     // props are used by templates
     this.props = {}
-    this.props.extensionManifest = this.options['extension-manifest']
-    this.props.projectName = utils.readPackageJson(this).name
-    this.props['templateFolder'] = this.options['template-folder']
+    this.props['extensionManifest'] = this.options['extension-manifest']
+    this.props['projectName'] = utils.readPackageJson(this).name
   }
 
   // nothing for now
@@ -44,11 +43,14 @@ class CFAdminUIGenerator extends Generator {
       this.props
     )
 
+    // Generate App.js
+    this._generateAppRoute()
+
+    // Generate ExtensionRegistration.js
+    this._generateExtensionRegistration()
+    
     // Generate React component files for custom buttons that needs to show a modal
     this._generateModalFiles()
-    
-    // Generate Extension registration according to the manifest
-    this._generateExtensionRegistration()
 
     // add .babelrc
     /// NOTE this is a global file and might conflict
@@ -87,13 +89,23 @@ class CFAdminUIGenerator extends Generator {
     )
   }
 
+  _generateAppRoute() {
+    const relativeTemplatePath = '../_shared/stub-app.ejs'
+
+    this.fs.copyTpl(
+      this.templatePath(relativeTemplatePath),
+      this.destinationPath(path.join(this.destFolder, `./src/components/App.js`)),
+      this.props
+    )
+  }
+
   _generateExtensionRegistration() {
     // Generic Project
-    var relativeTemplatePath = '../_shared/stub-generic-extension-registration.js'
+    var relativeTemplatePath = '../_shared/stub-generic-extension-registration.ejs'
     
     // Demo Project
-    if (this.props.templateFolder) {
-      relativeTemplatePath = `../${this.props.templateFolder}/stub-extension-registration.js`
+    if (this.props.extensionManifest.templateFolder) {
+      relativeTemplatePath = `../${this.props.extensionManifest.templateFolder}/stub-extension-registration.js`
     }
 
     this.fs.copyTpl(
@@ -105,11 +117,11 @@ class CFAdminUIGenerator extends Generator {
 
   _generateModalFiles() {
     // Generic Project
-    var relativeTemplatePath = '../_shared/stub-generic-modal.js'
+    var relativeTemplatePath = '../_shared/stub-generic-modal.ejs'
     
     // Demo Project
-    if (this.props.templateFolder) {
-      relativeTemplatePath = `../${this.props.templateFolder}/stub-modal.js`
+    if (this.props.extensionManifest.templateFolder) {
+      relativeTemplatePath = `../${this.props.extensionManifest.templateFolder}/stub-modal.ejs`
     }
 
     const actionBarButtons = this.props.extensionManifest.actionBarButtons || []

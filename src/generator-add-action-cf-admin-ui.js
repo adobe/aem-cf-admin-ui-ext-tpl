@@ -41,7 +41,7 @@ const { Core } = require('@adobe/aio-sdk')`,
     }
 
     this.props['actionName'] = this.options['action-name']
-    this.props['templateFolder'] = this.options['template-folder']
+    this.props['extensionManifest'] = this.options['extension-manifest']
   }
 
   // async prompting () {
@@ -60,19 +60,15 @@ const { Core } = require('@adobe/aio-sdk')`,
     var templateDotEnvVars = ['API_ENDPOINT']
     
     // Demo Project
-    if (this.props.templateFolder) {
-      templates = require(`./templates/${this.props.templateFolder}`)
-      templateInputs = {
-        LOG_LEVEL: 'debug',
-        SLACK_WEBHOOK: '$SLACK_WEBHOOOK',
-        SLACK_CHANNEL: '$SLACK_CHANNEL'
-      }
-      templateDotEnvVars = ['SLACK_WEBHOOOK', 'SLACK_CHANNEL']
+    if (this.props.extensionManifest.templateFolder) {
+      templates = require(`./templates/${this.props.extensionManifest.templateFolder}`)
+      templateInputs = this.props.extensionManifest.templateInputs || {}
+      templateDotEnvVars = this.props.extensionManifest.templateDotEnvVars || []
     }
 
     this.addAction(this.props.actionName, templates['stub-action'], {
       testFile: templates['stub-action.test'],
-      sharedLibFile: templates.utils,
+      sharedLibFile: templates['utils'],
       sharedLibTestFile: templates['utils.test'],
       e2eTestFile: templates['stub-action.e2e'],
       tplContext: this.props,
@@ -82,7 +78,7 @@ const { Core } = require('@adobe/aio-sdk')`,
       actionManifestConfig: {
         inputs: templateInputs,
         annotations: { 
-          final: true, 
+          'final': true, 
           'require-adobe-auth': false 
         } // makes sure loglevel cannot be overwritten by request param
       },

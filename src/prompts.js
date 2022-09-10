@@ -242,6 +242,8 @@ const promptGuideMenu = (manifest) => {
         manifest['actionBarButtons'] = slackDemoManifest['actionBarButtons'] || null
         manifest['headerMenuButtons'] = slackDemoManifest['headerMenuButtons'] || null
         manifest['runtimeActions'] = slackDemoManifest['runtimeActions'] || null
+        manifest['templateInputs'] = slackDemoManifest['templateInputs'] || null
+        manifest['templateDotEnvVars'] = slackDemoManifest['templateDotEnvVars'] || null
         exitMenu = true
 
         return Promise.resolve(true)
@@ -290,20 +292,6 @@ const sampleProjectPrompts = () => {
 const dummyPrompt = () => {
   console.log(chalk.blue(chalk.bold(`Please stay tuned for this feature!`)+ '\n'))
 }
-
-// const readManifest = (manifestPath) => {
-//   try {
-//     return JSON.parse(
-//       fs.readFileSync(manifestPath, { encoding: 'utf8' })
-//     )
-//   } catch (err) {
-//     if (err.code === 'ENOENT') {
-//       return {}
-//     } else {
-//       throw err
-//     }
-//   }
-// }
 
 module.exports = {
   briefOverviews,
