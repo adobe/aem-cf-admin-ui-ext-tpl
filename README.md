@@ -21,7 +21,7 @@ Extensibility Template for AEM Content Fragment Admin UI
 - Credentials in the project from previous point
 
 # Additional Plugin Requirements
-1. [@adobe/aio-cli-plugin-app-templates 1.0.0](https://github.com/adobe/aio-cli-plugin-app-templates)
+1. [@adobe/aio-cli-plugin-app-templates 1.2.0](https://github.com/adobe/aio-cli-plugin-app-templates)
 2. [@adobe/aio-cli-plugin-app (Switch to 'story/ACNA-1650' branch)](https://github.com/adobe/aio-cli-plugin-app)
 
 # Usage
