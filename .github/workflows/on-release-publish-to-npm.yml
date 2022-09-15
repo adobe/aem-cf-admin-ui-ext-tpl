@@ -1,6 +1,7 @@
-name: on-push-publish-to-npm
+name: on-release-publish-to-npm
 on:
   release:
+    types: [created]
     branches:
       - main # Change this if not your default branch
     paths:
