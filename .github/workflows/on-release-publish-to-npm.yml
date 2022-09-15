@@ -2,10 +2,6 @@ name: on-release-publish-to-npm
 on:
   release:
     types: [created]
-    branches:
-      - main # Change this if not your default branch
-    paths:
-      - 'package.json'
 jobs:
   publish:
     if: github.repository_owner == 'adobe'
