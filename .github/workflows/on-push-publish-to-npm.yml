@@ -1,6 +1,6 @@
 name: on-push-publish-to-npm
 on:
-  on: workflow_dispatch:
+  push:
     branches:
       - main # Change this if not your default branch
     paths:
@@ -15,6 +15,7 @@ jobs:
         with:
           node-version: 14
       - run: npm install
+      - run: npm test
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.ADOBE_BOT_NPM_TOKEN }}
