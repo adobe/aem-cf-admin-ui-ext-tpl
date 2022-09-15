@@ -21,6 +21,10 @@
     "yeoman-generator": "^5"
   },
   "devDependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/plugin-transform-react-jsx": "^7.8.3",
+    "@babel/polyfill": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
     "jest": "^27",
     "stdout-stderr": "^0.1.13",
     "yeoman-test": "^6.3.0"
