@@ -5,21 +5,27 @@
   "templateFolder": "slack-demo",
   "actionBarButtons": [
     {
-      "label": "Send to Slack",
+      "label": "Notify Slack",
       "needsModal": true,
-      "id": "send-to-slack"
+      "id": "notify-slack"
     }
   ],
   "headerMenuButtons": [
     {
-      "label": "Test Slack",
+      "label": "Configure Slack",
       "needsModal": true,
-      "id": "test-slack"
+      "id": "configure-slack"
     }
   ],
   "runtimeActions": [
     {
       "name": "notify-slack"
+    },
+    {
+      "name": "get-slack-config"
+    },
+    {
+      "name": "set-slack-config"
     }
   ],
   "templateInputs": {

@@ -4,11 +4,11 @@
 
 import { generatePath } from "react-router"
 import { Text } from "@adobe/react-spectrum"
-import uixGuest from "@adobe/uix-guest"
+import { createGuest } from "@adobe/uix-guest";
 
 function ExtensionRegistration() {
-  const uix = uixGuest({ id: "buttons-management" })
-  uix.register({
+  const guestConnection = createGuest({ id: "custom-buttons-management" })
+  guestConnection.register({
     // Your code goes here...
     <% if (extensionManifest.actionBarButtons || extensionManifest.headerMenuButtons) { -%>
       <% if (extensionManifest.actionBarButtons) { %>
@@ -27,13 +27,13 @@ function ExtensionRegistration() {
       onClick(buttonId, selections) {
         <% extensionManifest.actionBarButtons.forEach((button) => { -%>
           <% if (button.needsModal) { %>
-        if (buttonId == '<%- button.id %>') {
+        if (buttonId === '<%- button.id %>') {
           const modalURL = "/#" + generatePath("/content-fragment/:fragmentId/<%- button.id %>-modal", {
               fragmentId: encodeURIComponent(selections[0].id),
             });
           console.log("Modal URL: ", modalURL);
           
-          uix.host.actionBar.showModal({
+          guestConnection.host.modal.showUrl({
             title: "<%- button.label %> the Content Fragments",
             url: modalURL
           })
@@ -58,11 +58,11 @@ function ExtensionRegistration() {
       onClick(buttonId, selections) {
         <% extensionManifest.headerMenuButtons.forEach((button) => { -%>
           <% if (button.needsModal) { %>
-        if (buttonId == '<%- button.id %>') {
+        if (buttonId === '<%- button.id %>') {
           const modalURL = "/#/<%- button.id %>-modal"
           console.log("Modal URL: ", modalURL);
           
-          uix.host.headerMenu.showModal({
+          guestConnection.host.modal.showUrl({
             title: "<%- button.label %>",
             url: modalURL
           })

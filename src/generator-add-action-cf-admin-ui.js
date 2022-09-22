@@ -52,7 +52,7 @@ const { Core } = require('@adobe/aio-sdk')`,
     this.sourceRoot(path.join(__dirname, '.'))
 
     // Generic Project
-    var templates = commonTemplates
+    var templateActionPath = commonTemplates['stub-action']
     var templateInputs = { 
       LOG_LEVEL: 'debug',
       API_ENDPOINT: '$API_ENDPOINT'
@@ -61,16 +61,16 @@ const { Core } = require('@adobe/aio-sdk')`,
     
     // Demo Project
     if (this.props.extensionManifest.templateFolder) {
-      templates = require(`./templates/${this.props.extensionManifest.templateFolder}`)
+      templateActionPath = `./templates/${this.props.extensionManifest.templateFolder}/${this.props.actionName}-action.js`
       templateInputs = this.props.extensionManifest.templateInputs || {}
       templateDotEnvVars = this.props.extensionManifest.templateDotEnvVars || []
     }
 
-    this.addAction(this.props.actionName, templates['stub-action'], {
-      testFile: templates['stub-action.test'],
-      sharedLibFile: templates['utils'],
-      sharedLibTestFile: templates['utils.test'],
-      e2eTestFile: templates['stub-action.e2e'],
+    this.addAction(this.props.actionName, templateActionPath, {
+      // testFile: templates['stub-action.test'],
+      sharedLibFile: commonTemplates['utils'],
+      sharedLibTestFile: commonTemplates['utils.test'],
+      e2eTestFile: commonTemplates['stub-action.e2e'],
       tplContext: this.props,
       dependencies: {
         'node-fetch': '^2.6.0'

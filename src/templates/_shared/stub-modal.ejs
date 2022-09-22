@@ -1,0 +1,63 @@
+/*
+ * <license header> Generic Modal
+ */
+
+import React, {useEffect, useState} from "react"
+import { attach } from "@adobe/uix-guest"
+import {
+  Flex,
+  Form,
+  ProgressCircle,
+  View,
+  Provider,
+  defaultTheme,
+  TextField,
+  ButtonGroup,
+  Button,
+  AlertDialog,
+  DialogContainer
+} from '@adobe/react-spectrum'
+
+import allActions from '../config.json'
+import actionWebInvoke from '../utils'
+<% if (extensionArea === 'actionBar') { %>
+import { useParams } from "react-router-dom"
+<% } -%>
+
+export default <%- functionName %> () {
+  const [guestConnection, setGuestConnection] = useState()
+  const [sharedContext, setSharedContext] = useState()
+  <% if (extensionArea === 'actionBar') { %>
+  const fragmentId = useParams()
+  
+  if (!fragmentId) {
+    console.error("fragmentId parameter is missing")
+    return
+  }
+  <% } -%>
+
+  useEffect(() => {
+    (async () => {
+      const guestConnection = await attach({ id: "custom-buttons-management" })
+
+      setGuestConnection(guestConnection)
+      setSharedContext(guestConnection.sharedContext)
+      setIsLoading(false)
+    })()
+  }, [])
+
+  const onCancelHandler = () => {
+    guestConnection.modal.closeModal()
+  }
+
+  return (
+    <Provider theme={defaultTheme} colorScheme={'light'}>
+      <Content width="97%">
+        <Text>Modal content will be rendered here...</Text>
+        <ButtonGroup align="end" width="100%">
+          <Button variant="primary" onClick={onCancelHandler}>Cancel</Button>
+        </ButtonGroup>
+      </Content>
+    </Provider>
+  )
+}
