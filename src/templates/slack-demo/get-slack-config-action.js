@@ -15,72 +15,71 @@
  */
 
 
- const { Core } = require('@adobe/aio-sdk')
- const { errorResponse, stringParameters, checkMissingRequestInputs } = require('../utils')
- const stateLib = require('@adobe/aio-lib-state')
- 
- // main function that will be executed by Adobe I/O Runtime
- async function main (params) {
-   // create a Logger
-   const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
- 
-   // log parameters, only if params.LOG_LEVEL === 'debug'
-   logger.debug(stringParameters(params))
- 
-   // check for missing request input parameters and headers
-   const requiredParams = ['userId']
-   const errorMessage = checkMissingRequestInputs(params, requiredParams)
-   if (errorMessage) {
-     // return and log client errors
-     return errorResponse(400, errorMessage, logger)
-   }
- 
-   try {
-     // 'info' is the default level if not set
-     logger.info('Calling the main action of get-slack-config')
- 
-     // log parameters, only if params.LOG_LEVEL === 'debug'
-     logger.debug(stringParameters(params))
- 
-     const state = await stateLib.init()
-     const storedUser = await state.get(`${params.userId}`)
- 
-     if (storedUser) {
-       // exists
-       logger.debug(storedUser)
-       return {
-         statusCode: 200,
-         body: {
-           message: "Request Successful!",
-           slackWebhook: `${storedUser.value.slackWebhook}`,
-           slackChannel: `${storedUser.value.slackChannel}`
-         }
-       }
-     } else {
-       // new user
-       const slackConfig = {
-         "slackWebhook": `${params.SLACK_WEBHOOK}`,
-         "slackChannel": `${params.SLACK_CHANNEL}`
-       }
- 
-       await state.put(`${params.userId}`, slackConfig, { ttl: 86400 })
- 
-       return {
-         statusCode: 200,
-         body: {
-           message: "Request Successful!",
-           slackWebhook: slackConfig.slackWebhook,
-           slackChannel: slackConfig.slackChannel
-         }
-       }
-     }
-   } catch (error) {
-     // log any server errors
-     logger.error(error)
-     // return with 500
-     return errorResponse(500, 'server error', logger)
-   }
- }
- 
- exports.main = main
- 
+const { Core } = require('@adobe/aio-sdk')
+const stateLib = require('@adobe/aio-lib-state')
+const { errorResponse, stringParameters, checkMissingRequestInputs } = require('../utils')
+
+// main function that will be executed by Adobe I/O Runtime
+async function main (params) {
+  // create a Logger
+  const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
+
+  // log parameters, only if params.LOG_LEVEL === 'debug'
+  logger.debug(stringParameters(params))
+
+  // check for missing request input parameters and headers
+  const requiredParams = ['userId']
+  const errorMessage = checkMissingRequestInputs(params, requiredParams)
+  if (errorMessage) {
+    // return and log client errors
+    return errorResponse(400, errorMessage, logger)
+  }
+
+  try {
+    // 'info' is the default level if not set
+    logger.info('Calling the main action of get-slack-config')
+
+    // log parameters, only if params.LOG_LEVEL === 'debug'
+    logger.debug(stringParameters(params))
+
+    const state = await stateLib.init()
+    const storedUser = await state.get(`${params.userId}`)
+
+    if (storedUser) {
+      // exists
+      logger.debug(storedUser)
+      return {
+        statusCode: 200,
+        body: {
+          message: "Request Successful!",
+          slackWebhook: `${storedUser.value.slackWebhook}`,
+          slackChannel: `${storedUser.value.slackChannel}`
+        }
+      }
+    } else {
+      // new user
+      const slackConfig = {
+        "slackWebhook": `${params.SLACK_WEBHOOK}`,
+        "slackChannel": `${params.SLACK_CHANNEL}`
+      }
+
+      await state.put(`${params.userId}`, slackConfig, { ttl: 60 })
+
+      return {
+        statusCode: 200,
+        body: {
+          message: "Request Successful!",
+          slackWebhook: slackConfig.slackWebhook,
+          slackChannel: slackConfig.slackChannel
+        }
+      }
+    }
+  } catch (error) {
+    // log any server errors
+    logger.error(error)
+    // return with 500
+    return errorResponse(500, 'server error', logger)
+  }
+}
+
+exports.main = main

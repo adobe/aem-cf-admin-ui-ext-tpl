@@ -4,12 +4,12 @@
 
 import { generatePath } from "react-router"
 import { Text } from "@adobe/react-spectrum"
-import { createGuest } from "@adobe/uix-guest";
+import { createGuest } from "@adobe/uix-guest"
 
 function ExtensionRegistration() {
   const guestConnection = createGuest({ id: "custom-buttons-management" })
   guestConnection.register({
-    // Your code goes here...
+    // Set up your custom buttons here
     <% if (extensionManifest.actionBarButtons || extensionManifest.headerMenuButtons) { -%>
       <% if (extensionManifest.actionBarButtons) { %>
     actionBar: {

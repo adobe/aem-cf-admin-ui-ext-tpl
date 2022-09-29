@@ -29,7 +29,7 @@ const briefOverviews = {
 }
 
 const promptDocs = {
-  mainDoc: "https://git.corp.adobe.com/pages/dx-devex-acceleration/uix-docs/",
+  mainDoc: "https://git.corp.adobe.com/pages/dx-devex-acceleration/uix-docs/overview/",
   sampleProject: "https://www.example.com/project"
 }
 

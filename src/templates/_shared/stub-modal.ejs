@@ -1,32 +1,32 @@
 /*
- * <license header> Generic Modal
+ * <license header>
  */
 
-import React, {useEffect, useState} from "react"
+import React, { useState, useEffect } from 'react'
 import { attach } from "@adobe/uix-guest"
 import {
   Flex,
   Form,
   ProgressCircle,
-  View,
   Provider,
+  Content,
   defaultTheme,
   TextField,
   ButtonGroup,
   Button,
-  AlertDialog,
-  DialogContainer
+  Heading,
+  View
 } from '@adobe/react-spectrum'
 
-import allActions from '../config.json'
-import actionWebInvoke from '../utils'
+import Spinner from "./Spinner"
 <% if (extensionArea === 'actionBar') { %>
 import { useParams } from "react-router-dom"
-<% } -%>
+<% } %>
+import allActions from '../config.json'
+import actionWebInvoke from '../utils'
 
 export default <%- functionName %> () {
   const [guestConnection, setGuestConnection] = useState()
-  const [sharedContext, setSharedContext] = useState()
   <% if (extensionArea === 'actionBar') { %>
   const fragmentId = useParams()
   
@@ -41,19 +41,18 @@ export default <%- functionName %> () {
       const guestConnection = await attach({ id: "custom-buttons-management" })
 
       setGuestConnection(guestConnection)
-      setSharedContext(guestConnection.sharedContext)
       setIsLoading(false)
     })()
   }, [])
 
   const onCancelHandler = () => {
-    guestConnection.modal.closeModal()
+    guestConnection.host.modal.close()
   }
 
   return (
     <Provider theme={defaultTheme} colorScheme={'light'}>
       <Content width="97%">
-        <Text>Modal content will be rendered here...</Text>
+        <Text>Your modal content</Text>
         <ButtonGroup align="end" width="100%">
           <Button variant="primary" onClick={onCancelHandler}>Cancel</Button>
         </ButtonGroup>

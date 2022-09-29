@@ -26,7 +26,7 @@ import ExtensionRegistration from "./ExtensionRegistration"
 import <%- modalFileName %> from "./<%- modalFileName %>"
 <% }}) -%>
 
-function App() {
+function App(props) {
   return (
     <Router>
       <ErrorBoundary onError={onError} FallbackComponent={fallbackComponent}>
@@ -41,7 +41,7 @@ function App() {
             <% extensionManifest.actionBarButtons.forEach((button) => { -%>
               <% if (button.needsModal) { %>
           <Route
-            exact path="content-fragment/:fragmentId/<%- button.id %>-modal"
+            exact path="content-fragment/:fragmentNames/:fragmentTitles/<%- button.id %>-modal"
             element={<<%- button.label.replace(/ /g, '') %>Modal ims={props.ims} />}
           />
           <% }})} -%>

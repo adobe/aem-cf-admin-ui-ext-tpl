@@ -10,42 +10,41 @@
  * governing permissions and limitations under the License.
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams } from "react-router-dom"
 import { attach } from "@adobe/uix-guest"
 import {
   Flex,
-  Form,
   ProgressCircle,
   Provider,
+  Content,
   defaultTheme,
   TextField,
   ButtonGroup,
   Button,
-  AlertDialog,
-  DialogContainer
+  Heading,
+  View
 } from '@adobe/react-spectrum'
 
 import allActions from '../config.json'
 import actionWebInvoke from '../utils'
+import { IllustratedMessage } from '@adobe/react-spectrum'
 
-export default <%- functionName %> () {
+export default function <%- functionName %> ({ims}) {
   // Fields
-  const [slackText, setSlackText] = useState('')
+  const [slackMessage, setSlackMessage] = useState('')
   const [requestStatus, setRequestStatus] = useState('')
   const [requestMessage, setRequestMessage] = useState('')
   const [guestConnection, setGuestConnection] = useState()
-  const [sharedContext, setSharedContext] = useState()
-  const fragmentId = useParams()
+  const { fragmentNames, fragmentTitles } = useParams()
 
   // Action state
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isNotifying, setIsNotifying] = useState(false)
+  const [isRequestComplete, setIsRequestComplete] = useState(false)
 
   
-  if (!fragmentId) {
-    console.error("fragmentId parameter is missing")
+  if (!(fragmentNames || fragmentTitles)) {
+    console.error("fragmentNames parameter is missing")
     return
   }
 
@@ -54,77 +53,62 @@ export default <%- functionName %> () {
       const guestConnection = await attach({ id: "custom-buttons-management" })
 
       setGuestConnection(guestConnection)
-      setSharedContext(guestConnection.sharedContext)
-      setIsLoading(false)
+      setSlackMessage(fragmentNames)
     })()
   }, [])
 
   const reset = () => {
-    setSlackText('')
+    setSlackMessage('')
   }
 
-  const isValidForm = () => {
-    slackText
+  const onCloseHandler = () => {
+    guestConnection.host.modal.close()()
   }
 
-  const onCancelHandler = () => {
-    guestConnection.modal.closeModal()
+  const onNotifySlackHandler = async () => {
+    setIsNotifying(true)
+
+    const res = await actionWebInvoke(
+      allActions['notify-slack'],
+      {},
+      {
+        'userId': ims.profile.userId,
+        'slackText': slackMessage + `\n\nSelected Fragment Title(s):\n${fragmentTitles}`
+      }
+    )
+
+    if (res.error) {
+      setRequestStatus("Request Failure")
+      setRequestMessage(res.error)
+    } else {
+      setRequestStatus("Request Success")
+      setRequestMessage("The Slack notification was sent successfully.")
+      // onCloseHandler()
+    }
+    setIsRequestComplete(true)
+    console.log(res)
+    setIsNotifying(false)
   }
 
   return (
     <Provider theme={defaultTheme} colorScheme='light'>
-      <Content width="97%">
-        <Form
-          isRequired
-          isDisabled={isSubmitting}
-          width="size-6000"
-          marginY="size-200"
-          onSubmit={async (e) => {
-            e.preventDefault()
+      <Content width="100%">
+        <TextField value={slackMessage} onChange={setSlackMessage} label="Message" width="100%"/>
 
-            setIsSubmitting(true)
-
-            const res = await actionWebInvoke(
-              allActions['notify-slack'],
-              {},
-              {
-                'userId': ims.profile.userId,
-                'slackText': slackText
-              }
-            )
-
-            if (res.error) {
-              setRequestStatus("Request Failure")
-              setRequestMessage(res.error)
-              setIsDialogOpen(true)
-            } else {
-              setRequestStatus("Request Success")
-              setRequestMessage("The Slack notification was sent successfully.")
-              setIsDialogOpen(true)
-              reset()
-            }
-            
-            console.log(res)
-            setIsSubmitting(false)
-          }}>
-          <TextField value={slackText} onChange={setSlackText} label="Slack Text"/>
-
-          <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
-            {isSubmitting && <ProgressCircle size="S" aria-label="Submitting..." isIndeterminate />}
-            <ButtonGroup align="end" margin="size-175">
-              <Button variant="primary" onClick={onCancelHandler}>Cancel</Button>
-              <Button variant="cta" type="submit" isDisabled={isSubmitting || isValidForm()}>Send</Button>
-            </ButtonGroup>
-          </Flex>
-        </Form>
-
-        <DialogContainer onDismiss={() => setIsDialogOpen(false)}>
-          {isDialogOpen && (
-            <AlertDialog title={requestStatus} variant="information" primaryActionLabel="Close">
-              {requestMessage}
-            </AlertDialog>
-          )}
-        </DialogContainer>
+        <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
+          {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
+          <ButtonGroup align="end" margin="size-175">
+            <Button variant="primary" onClick={onCloseHandler}>Close</Button>
+            <Button variant="cta" onClick={onNotifySlackHandler}>Send</Button>
+          </ButtonGroup>
+        </Flex>
+        <View height="size-300" />
+        {isRequestComplete && (
+          <IllustratedMessage>
+            <Heading>{requestStatus}</Heading>
+            <Content>{requestMessage}</Content>
+          </IllustratedMessage>
+        )}
       </Content>
     </Provider>
   )

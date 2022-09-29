@@ -10,136 +10,144 @@
  * governing permissions and limitations under the License.
  */
 
- import React, { useState } from 'react'
- import {
-   Flex,
-   Form,
-   ProgressCircle,
-   View,
-   Provider,
-   defaultTheme,
-   TextField,
-   ButtonGroup,
-   Button,
-   AlertDialog,
-   DialogContainer
- } from '@adobe/react-spectrum'
- 
- import allActions from '../config.json'
- import actionWebInvoke from '../utils'
- 
+import React, { useState, useEffect } from 'react'
+import { attach } from "@adobe/uix-guest"
+import {
+  Flex,
+  Form,
+  ProgressCircle,
+  Provider,
+  Content,
+  defaultTheme,
+  TextField,
+  ButtonGroup,
+  Button,
+  Heading,
+  View
+} from '@adobe/react-spectrum'
 
-export default <%- functionName %> () {
-  // Fields
-  const [slackWebhook, setSlackWebhook] = useState('')
-  const [slackChannel, setSlackChannel] = useState('')
-  const [requestStatus, setRequestStatus] = useState('')
-  const [requestMessage, setRequestMessage] = useState('')
-  const [guestConnection, setGuestConnection] = useState()
-  const [sharedContext, setSharedContext] = useState()
+import Spinner from "./Spinner"
+import { IllustratedMessage } from '@adobe/react-spectrum'
 
-  // Action state
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isDialogOpen, setisDialogOpen] = useState(false)
+import allActions from '../config.json'
+import actionWebInvoke from '../utils'
 
-  useEffect (() => {
-    (async () => {
-      const guestConnection = await attach({ id: "custom-buttons-management" })
 
-      setGuestConnection(guestConnection)
-      setSharedContext(guestConnection.sharedContext)
+export default function <%- functionName %> ({ims}) {
+ // Fields
+ const [slackWebhook, setSlackWebhook] = useState('')
+ const [slackChannel, setSlackChannel] = useState('')
+ const [requestStatus, setRequestStatus] = useState('')
+ const [requestMessage, setRequestMessage] = useState('')
+ const [guestConnection, setGuestConnection] = useState()
 
-      const res = await actionWebInvoke(
-        allActions['get-slack-config'],
-        {},
-        { userId: ims.profile.userId },
-        { method: 'GET' }
-      )
+ // Action state
+ const [isLoading, setIsLoading] = useState(true)
+ const [isSaving, setIsSaving] = useState(false)
+ const [isRequestComplete, setIsRequestComplete] = useState(false)
 
-      if (res.error) {
-        alert(res.error.message)
-      } else {
-        setSlackWebhook(res.slackWebhook)
-        setSlackChannel(res.slackChannel)
-      }
+ useEffect (() => {
+   (async () => {
+     const guestConnection = await attach({ id: "custom-buttons-management" })
 
-      console.log(res)
-      setIsLoading(false)
-    })()
-  }, [])
+     setGuestConnection(guestConnection)
 
-  const reset = () => {
-    setSlackWebhook('')
-    setSlackChannel('')
-  }
+     const res = await actionWebInvoke(
+       allActions['get-slack-config'],
+       {},
+       { 'userId': ims.profile.userId },
+       { 'method': 'GET' }
+     )
 
-  const isValidForm = () => {
-    slackWebhook & slackChannel
-  }
+     if (res.error) {
+       console.log(res.error.message)
+     } else {
+       setSlackWebhook(res.slackWebhook)
+       setSlackChannel(res.slackChannel)
+     }
 
-  const onCancelHandler = () => {
-    guestConnection.modal.closeModal()
-  }
+     console.log(res)
+     setIsLoading(false)
+   })()
+ }, [])
 
-  return (
-    <Provider theme={defaultTheme} colorScheme='light'>
-      <Content width="97%">
-        <Form
-          isRequired
-          isDisabled={isSubmitting}
-          width="50%"
-          marginY="size-200"
-          onSubmit={async (e) => {
-            e.preventDefault()
+ const reset = () => {
+   setSlackWebhook('')
+   setSlackChannel('')
+ }
 
-            setIsSubmitting(true)
+ const isValidForm = () => {
+   slackWebhook & slackChannel
+ }
 
-            const res = await actionWebInvoke(
-              allActions['set-slack-config'],
-              {},
-              {
-                userId: ims.profile.userId,
-                slackConfig: {
-                  'slackWebhook': slackWebhook,
-                  'slackChannel': slackChannel
-                }
-              }
-            )
+ const onCloseHandler = () => {
+   guestConnection.host.modal.close()
+ }
 
-            if (res.error) {
-              setRequestStatus("Request Failure")
-              setRequestMessage(res.error)
-              setisDialogOpen(true)
-            } else {
-              setRequestStatus("Request Success")
-              setRequestMessage("Slack configuration was saved successfully.")
-              setisDialogOpen(true)
-            }
-            
-            console.log(res)
-            setIsSubmitting(false)
-          }}>
-          <TextField value={slackWebhook} onChange={setSlackWebhook} label="Slack Webhook URL"/>
-          <TextField value={slackChannel} onChange={setSlackChannel} label="Slack Channel"/>
+ const onHelpHandler = () => {
+   setRequestStatus("Set up webhook for Slack")
+   setRequestMessage("https://slack.com/help/articles/115005265063-Incoming-webhooks-for-Slack")
+   setIsRequestComplete(true)
+ }
 
-          <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
-            {isSubmitting && <ProgressCircle size="S" aria-label="Submitting..." isIndeterminate />}
-            <ButtonGroup align="end" margin="size-175">
-              <Button variant="primary" onClick={onCancelHandler}>Cancel</Button>
-              <Button variant="cta" type="submit" isDisabled={isSubmitting || isValidForm()}>Save</Button>
-            </ButtonGroup>
-          </Flex>
-        </Form>
+ const onSaveHandler = async () => {
+   setIsSaving(true)
 
-        <DialogContainer onDismiss={() => setisDialogOpen(false)}>
-          {isDialogOpen && (
-            <AlertDialog title={requestStatus} variant="information" primaryActionLabel="Close">
-              {requestMessage}
-            </AlertDialog>
-          )}
-        </DialogContainer>
-      </Content>
-    </Provider>
-  )
+     const res = await actionWebInvoke(
+       allActions['set-slack-config'],
+       {},
+       {
+         userId: ims.profile.userId,
+         slackConfig: {
+           'slackWebhook': slackWebhook,
+           'slackChannel': slackChannel
+         }
+       }
+     )
+
+     if (res.error) {
+       setRequestStatus("Request Failure")
+       setRequestMessage(res.error)
+     } else {
+       setRequestStatus("Request Success")
+       setRequestMessage("Slack configuration was saved successfully.")
+       // onCloseHandler()
+     }
+     setIsRequestComplete(true)
+     console.log(res)
+     setIsSaving(false)
+ }
+
+ return (
+   <Provider theme={defaultTheme} colorScheme='light'>
+     <Content width="100%">
+       {
+         isLoading ? (
+           <Spinner />
+         ) : (
+           <Form isRequired isDisabled={isSaving}>
+             <TextField value={slackWebhook} onChange={setSlackWebhook} label="Slack Webhook URL"/>
+             <TextField value={slackChannel} onChange={setSlackChannel} label="Slack Channel"/>
+
+             <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
+               {isSaving && <ProgressCircle size="S" aria-label="Saving..." isIndeterminate />}
+               <ButtonGroup marginStart="size-200">
+                 <Button variant="primary" onClick={onCloseHandler}>Close</Button>
+                 <Button variant="secondary" onClick={onHelpHandler}>Help</Button>
+                 <Button variant="cta" onClick={onSaveHandler}>Save</Button>
+               </ButtonGroup>
+             </Flex>
+           </Form>
+         )
+       }
+       <View height="size-300" />
+       {isRequestComplete && (
+         <IllustratedMessage>
+           <Heading>{requestStatus}</Heading>
+           <Content>{requestMessage}</Content>
+         </IllustratedMessage>
+       )}
+     </Content>
+   </Provider>
+ )
 }

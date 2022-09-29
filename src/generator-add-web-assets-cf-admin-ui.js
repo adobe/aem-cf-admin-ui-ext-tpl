@@ -91,8 +91,13 @@ class CFAdminUIGenerator extends Generator {
   }
 
   _generateAppRoute() {
-    // const relativeTemplatePath = '../_shared/stub-app.ejs'
-    const relativeTemplatePath = './templates/_shared/stub-app.ejs'
+    // Generic Project
+    var relativeTemplatePath = './templates/_shared/stub-app.ejs'
+
+    // Demo Project
+    if (this.props.extensionManifest.templateFolder) {
+      relativeTemplatePath = `./templates/${this.props.extensionManifest.templateFolder}/app.ejs`
+    }
 
     this.fs.copyTpl(
       this.templatePath(relativeTemplatePath),

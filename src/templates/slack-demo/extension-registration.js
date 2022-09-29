@@ -12,25 +12,35 @@
 
 import { generatePath } from "react-router"
 import { Text } from "@adobe/react-spectrum"
-import { createGuest } from "@adobe/uix-guest";
+import { createGuest } from "@adobe/uix-guest"
 
 function ExtensionRegistration() {
   const guestConnection = createGuest({ id: "custom-buttons-management" })
+  
   guestConnection.register({
-    // Your demo code goes here...
     actionBar: {
       getButton() {
         return {
           id: 'notify-slack',
           label: 'Notify Slack',
-          icon: '',
+          icon: 'PublishCheck',
         }
     },
       onClick(selections) {
-        const modalURL = "https://development-24749-562turquoiseshrimp-stage.dev.runtime.adobe.io/index.html#" + 
-        generatePath("/content-fragment/:fragmentId/notify-slack-modal", {
-          fragmentId: encodeURIComponent(selections[0].id),
-        });
+        var selectionNames = ""
+        var selectionTitles = ""
+
+        selections.forEach((selection) => {
+          selectionNames = selectionNames.concat(selection.name, ' | ')
+          selectionTitles = selectionTitles.concat(selection.title, '\n')
+        })
+        console.log("Selection Names: ", selectionNames)
+        console.log("Selection Titles: ", selectionTitles)
+
+        const modalURL = "/index.html#" + generatePath("/content-fragment/:fragmentNames/:fragmentTitles/notify-slack-modal", {
+          fragmentNames: encodeURIComponent(selectionNames),
+          fragmentTitles: encodeURIComponent(selectionTitles)
+        })
         console.log("Modal URL: ", modalURL)
 
         guestConnection.host.modal.showUrl({
@@ -44,11 +54,11 @@ function ExtensionRegistration() {
         return {
           id: 'configure-slack',
           label: 'Configure Slack',
-          icon: '',
+          icon: 'OpenIn',
         }
       },
-      onClick(selections) {
-        const modalURL = "https://development-24749-562turquoiseshrimp-stage.dev.runtime.adobe.io/index.html#/configure-slack-model";
+      onClick() {
+        const modalURL = "/index.html#/configure-slack-modal"
         console.log("Modal URL: ", modalURL)
 
         guestConnection.host.modal.showUrl({
