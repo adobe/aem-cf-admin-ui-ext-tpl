@@ -33,7 +33,7 @@ import { IllustratedMessage } from '@adobe/react-spectrum'
 import { extensionId } from "./Constants"
 
 
-export default function <%- functionName %> ({ims}) {
+export default function <%- functionName %> () {
   // Fields
   const [slackMessage, setSlackMessage] = useState('')
   const [status, setStatus] = useState('')

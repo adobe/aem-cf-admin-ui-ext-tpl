@@ -31,7 +31,7 @@ import Spinner from "./Spinner"
 import { extensionId } from "./Constants"
 
 
-export default function <%- functionName %> ({ims}) {
+export default function <%- functionName %> () {
   // Fields
   const [slackWebhook, setSlackWebhook] = useState('')
   const [slackChannel, setSlackChannel] = useState('')
