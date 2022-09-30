@@ -11,6 +11,7 @@ import {
   Provider,
   Content,
   defaultTheme,
+  Text,
   TextField,
   ButtonGroup,
   Button,
@@ -25,7 +26,8 @@ import { useParams } from "react-router-dom"
 import allActions from '../config.json'
 import actionWebInvoke from '../utils'
 
-export default <%- functionName %> () {
+export default function <%- functionName %> () {
+  // Fields
   const [guestConnection, setGuestConnection] = useState()
   <% if (extensionArea === 'actionBar') { %>
   const fragmentId = useParams()
@@ -41,21 +43,23 @@ export default <%- functionName %> () {
       const guestConnection = await attach({ id: "custom-buttons-management" })
 
       setGuestConnection(guestConnection)
-      setIsLoading(false)
     })()
   }, [])
 
-  const onCancelHandler = () => {
+  const onCloseHandler = () => {
     guestConnection.host.modal.close()
   }
 
   return (
-    <Provider theme={defaultTheme} colorScheme={'light'}>
-      <Content width="97%">
+    <Provider theme={defaultTheme} colorScheme='light'>
+      <Content width="100%">
         <Text>Your modal content</Text>
-        <ButtonGroup align="end" width="100%">
-          <Button variant="primary" onClick={onCancelHandler}>Cancel</Button>
-        </ButtonGroup>
+        
+        <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
+          <ButtonGroup align="end">
+            <Button variant="primary" onClick={onCloseHandler}>Close</Button>
+          </ButtonGroup>
+        </Flex>
       </Content>
     </Provider>
   )

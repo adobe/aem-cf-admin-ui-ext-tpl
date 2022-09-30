@@ -63,8 +63,8 @@ class MainGenerator extends Generator {
       .then(() => promptMainMenu(this.extensionManifest))
       .then(() => writeManifest(this.extensionManifest, EXTENSION_MANIFEST_PATH))
       .then(() => {
-        this.log("\Extension Manifest for Pre-generating Code")
-        this.log("---------------------------------------")
+        this.log("\nExtension Manifest for Code Pre-generation")
+        this.log("------------------------------------------")
         this.log(JSON.stringify(this.extensionManifest, null, '  '))
       })
   }

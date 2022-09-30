@@ -8,65 +8,75 @@ import { createGuest } from "@adobe/uix-guest"
 
 function ExtensionRegistration() {
   const guestConnection = createGuest({ id: "custom-buttons-management" })
+  
   guestConnection.register({
-    // Set up your custom buttons here
     <% if (extensionManifest.actionBarButtons || extensionManifest.headerMenuButtons) { -%>
       <% if (extensionManifest.actionBarButtons) { %>
+    <% if (extensionManifest.actionBarButtons.length > 1) { %>// This code will not work because the creation of multiple buttons in Action Bar is not yet supported.<% } else { %>// Configure your Action Bar button here<% } %>
     actionBar: {
       getButton() {
-        return [
+        return <% if (extensionManifest.actionBarButtons.length > 1) { %>[<% } else { %>{<% } -%>
           <% extensionManifest.actionBarButtons.forEach((button) => { %>
-          {
+          <% if (extensionManifest.actionBarButtons.length > 1) { %>{<% } %>
             'id': '<%- button.id %>',
             'label': '<%- button.label %>',
-            'icon': ''
-          },
+            'icon': 'PublishCheck'
+          }<% if (extensionManifest.actionBarButtons.length > 1) { %>,<% } -%>
           <% }) %>
-        ]
+        <% if (extensionManifest.actionBarButtons.length > 1) { %>]<% } %>
       },
+      <% if (extensionManifest.actionBarButtons.length > 1) { %>
       onClick(buttonId, selections) {
+      <% } else { %>
+      onClick(selections) {
+      <% } -%>
         <% extensionManifest.actionBarButtons.forEach((button) => { -%>
-          <% if (button.needsModal) { %>
-        if (buttonId === '<%- button.id %>') {
-          const modalURL = "/#" + generatePath("/content-fragment/:fragmentId/<%- button.id %>-modal", {
-              fragmentId: encodeURIComponent(selections[0].id),
-            });
-          console.log("Modal URL: ", modalURL);
-          
-          guestConnection.host.modal.showUrl({
-            title: "<%- button.label %> the Content Fragments",
-            url: modalURL
+          <% if (button.needsModal) { -%>
+        <% if (extensionManifest.actionBarButtons.length > 1) { %>if (buttonId === '<%- button.id %>') {<% } %>
+        const modalURL = "/index.html#" + generatePath("/content-fragment/:fragmentId/<%- button.id %>-modal", {
+            fragmentId: encodeURIComponent(selections[0].id),
           })
-        }
+        console.log("Modal URL: ", modalURL)
+        
+        guestConnection.host.modal.showUrl({
+          title: "<%- button.label %>",
+          url: modalURL
+        })
+        <% if (extensionManifest.actionBarButtons.length > 1) { %>}<% } -%>
         <% }}) %>
       }
     },
     <% } -%>
-    <% if (extensionManifest.headerMenuButtons) { %>
+      <% if (extensionManifest.headerMenuButtons) { %>
+    <% if (extensionManifest.headerMenuButtons.length > 1) { %>// This code will not work because the creation of multiple buttons in Header Menu is not yet supported.<% } else { %>// Configure your Header Menu button here<% } %>
     headerMenu: {
       getButton() {
-        return [
+        return <% if (extensionManifest.headerMenuButtons.length > 1) { %>[<% } else { %>{<% } -%>
           <% extensionManifest.headerMenuButtons.forEach((button) => { %>
-          {
+          <% if (extensionManifest.headerMenuButtons.length > 1) { %>{<% } %>
             'id': '<%- button.id %>',
             'label': '<%- button.label %>',
-            'icon': ''
-          },
+            'icon': 'OpenIn'
+          }<% if (extensionManifest.headerMenuButtons.length > 1) { %>,<% } -%>
           <% }) %>
-        ]
+        <% if (extensionManifest.headerMenuButtons.length > 1) { %>]<% } %>
       },
-      onClick(buttonId, selections) {
+      <% if (extensionManifest.headerMenuButtons.length > 1) { %>
+      onClick(buttonId) {
+      <% } else { %>
+      onClick() {
+      <% } -%>
         <% extensionManifest.headerMenuButtons.forEach((button) => { -%>
-          <% if (button.needsModal) { %>
-        if (buttonId === '<%- button.id %>') {
-          const modalURL = "/#/<%- button.id %>-modal"
-          console.log("Modal URL: ", modalURL);
-          
-          guestConnection.host.modal.showUrl({
-            title: "<%- button.label %>",
-            url: modalURL
-          })
-        }
+          <% if (button.needsModal) { -%>
+        <% if (extensionManifest.headerMenuButtons.length > 1) { %>if (buttonId === '<%- button.id %>') {<% } %>
+        const modalURL = "/index.html#/<%- button.id %>-modal"
+        console.log("Modal URL: ", modalURL)
+        
+        guestConnection.host.modal.showUrl({
+          title: "<%- button.label %>",
+          url: modalURL
+        })
+        <% if (extensionManifest.headerMenuButtons.length > 1) { %>}<% } -%>
         <% }}) %>
       }
     }

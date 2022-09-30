@@ -97,7 +97,7 @@ export default function <%- functionName %> ({ims}) {
 
         <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
           {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
-          <ButtonGroup align="end" margin="size-175">
+          <ButtonGroup align="end">
             <Button variant="primary" onClick={onCloseHandler}>Close</Button>
             <Button variant="cta" onClick={onNotifySlackHandler}>Send</Button>
           </ButtonGroup>

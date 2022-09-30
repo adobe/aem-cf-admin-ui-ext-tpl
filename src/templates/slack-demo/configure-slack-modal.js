@@ -131,7 +131,7 @@ export default function <%- functionName %> ({ims}) {
 
              <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
                {isSaving && <ProgressCircle size="S" aria-label="Saving..." isIndeterminate />}
-               <ButtonGroup marginStart="size-200">
+               <ButtonGroup align="end">
                  <Button variant="primary" onClick={onCloseHandler}>Close</Button>
                  <Button variant="secondary" onClick={onHelpHandler}>Help</Button>
                  <Button variant="cta" onClick={onSaveHandler}>Save</Button>

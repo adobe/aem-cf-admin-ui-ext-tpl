@@ -23,7 +23,7 @@ function ExtensionRegistration() {
         return {
           id: 'notify-slack',
           label: 'Notify Slack',
-          icon: 'PublishCheck',
+          icon: 'Send'
         }
     },
       onClick(selections) {
@@ -45,7 +45,7 @@ function ExtensionRegistration() {
 
         guestConnection.host.modal.showUrl({
           title: 'Notify Slack',
-          url: modalURL,
+          url: modalURL
         })
       }
     },
@@ -54,7 +54,7 @@ function ExtensionRegistration() {
         return {
           id: 'configure-slack',
           label: 'Configure Slack',
-          icon: 'OpenIn',
+          icon: 'Gears'
         }
       },
       onClick() {
@@ -63,7 +63,7 @@ function ExtensionRegistration() {
 
         guestConnection.host.modal.showUrl({
           title: 'Configure Slack',
-          url: modalURL,
+          url: modalURL
         })
       }
     }

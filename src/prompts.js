@@ -23,8 +23,8 @@ var exitMenu = false
 const briefOverviews = {
   templateInfo: `\nAEM Content Fragment Admin UI Template Overview:\n
   * You have the option to generate boilerpate code for your extensible buttons.
-  * You can check out a sample demo project.
   * You can get help regarding documentation at any time from the menu.
+  * You can check out a sample demo project.
   * An App Builder project will be created with Node.js packages pre-configured.\n`
 }
 
@@ -148,13 +148,17 @@ const nestedButtonPrompts = (manifest, manifestNodeName) => {
       answers.id = slugify(answers.label, {
         replacement: '-',  // replace spaces with replacement character, defaults to `-`
         remove: undefined, // remove characters that match regex, defaults to `undefined`
-        lower: true,      // convert to lower case, defaults to `false`
-        strict: true,     // strip special characters except replacement, defaults to `false`
+        lower: true,       // convert to lower case, defaults to `false`
+        strict: true,      // strip special characters except replacement, defaults to `false`
         locale: 'vi',      // language code of the locale to use
         trim: true         // trim leading and trailing replacement chars, defaults to `true`
       })
       // console.log(JSON.stringify(answers, null, '  '))
       manifest[manifestNodeName] = manifest[manifestNodeName] || []
+      if (manifest[manifestNodeName].length + 1 > 1) {
+        console.log(chalk.red(chalk.bold("The creation of multiple buttons is not yet supported.\n")))
+        return
+      }
       manifest[manifestNodeName].push(answers)
     })
     .catch((error) => {
