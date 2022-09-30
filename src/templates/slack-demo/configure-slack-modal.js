@@ -23,131 +23,109 @@ import {
   ButtonGroup,
   Button,
   Heading,
-  View
+  View,
+  IllustratedMessage
 } from '@adobe/react-spectrum'
 
 import Spinner from "./Spinner"
-import { IllustratedMessage } from '@adobe/react-spectrum'
-
-import allActions from '../config.json'
-import actionWebInvoke from '../utils'
+import { extensionId } from "./Constants"
 
 
 export default function <%- functionName %> ({ims}) {
- // Fields
- const [slackWebhook, setSlackWebhook] = useState('')
- const [slackChannel, setSlackChannel] = useState('')
- const [requestStatus, setRequestStatus] = useState('')
- const [requestMessage, setRequestMessage] = useState('')
- const [guestConnection, setGuestConnection] = useState()
+  // Fields
+  const [slackWebhook, setSlackWebhook] = useState('')
+  const [slackChannel, setSlackChannel] = useState('')
+  const [status, setStatus] = useState('')
+  const [message, setMessage] = useState('')
+  const [guestConnection, setGuestConnection] = useState()
 
- // Action state
- const [isLoading, setIsLoading] = useState(true)
- const [isSaving, setIsSaving] = useState(false)
- const [isRequestComplete, setIsRequestComplete] = useState(false)
+  // Action state
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isRequestComplete, setIsRequestComplete] = useState(false)
 
- useEffect (() => {
-   (async () => {
-     const guestConnection = await attach({ id: "custom-buttons-management" })
+  useEffect (() => {
+    (async () => {
+      const connection = await attach({ id: extensionId })
 
-     setGuestConnection(guestConnection)
+      setGuestConnection(connection)
 
-     const res = await actionWebInvoke(
-       allActions['get-slack-config'],
-       {},
-       { 'userId': ims.profile.userId },
-       { 'method': 'GET' }
-     )
+      try {
+      const webhook = localStorage.getItem('slackWebhook')
+      const channel = localStorage.getItem('slackChannel')
+      setSlackWebhook(webhook)
+      setSlackChannel(channel)
+    } catch (error) {
+      console.log(error)
+    }
 
-     if (res.error) {
-       console.log(res.error.message)
-     } else {
-       setSlackWebhook(res.slackWebhook)
-       setSlackChannel(res.slackChannel)
-     }
+    setIsLoading(false)
+    })()
+  }, [])
 
-     console.log(res)
-     setIsLoading(false)
-   })()
- }, [])
+  const reset = () => {
+    setSlackWebhook('')
+    setSlackChannel('')
+  }
 
- const reset = () => {
-   setSlackWebhook('')
-   setSlackChannel('')
- }
+  const onCloseHandler = () => {
+    guestConnection.host.modal.close()
+  }
 
- const isValidForm = () => {
-   slackWebhook & slackChannel
- }
+  const onHelpHandler = () => {
+    setStatus("Set up webhook for Slack")
+    setMessage("https://slack.com/help/articles/115005265063-Incoming-webhooks-for-Slack")
+    setIsRequestComplete(true)
+  }
 
- const onCloseHandler = () => {
-   guestConnection.host.modal.close()
- }
+  const onSaveHandler = async () => {
+  setIsSaving(true)
 
- const onHelpHandler = () => {
-   setRequestStatus("Set up webhook for Slack")
-   setRequestMessage("https://slack.com/help/articles/115005265063-Incoming-webhooks-for-Slack")
-   setIsRequestComplete(true)
- }
+  try {
+    localStorage.setItem('slackWebhook', slackWebhook)
+    localStorage.setItem('slackChannel', slackChannel)
+    setStatus("Success")
+    setMessage("Slack configuration was saved successfully.")
+  } catch (error) {
+    console.log(error)
+    setStatus("Failure")
+    setMessage(error)
+  }
 
- const onSaveHandler = async () => {
-   setIsSaving(true)
+  setIsRequestComplete(true)
+  setIsSaving(false)
+  }
 
-     const res = await actionWebInvoke(
-       allActions['set-slack-config'],
-       {},
-       {
-         userId: ims.profile.userId,
-         slackConfig: {
-           'slackWebhook': slackWebhook,
-           'slackChannel': slackChannel
-         }
-       }
-     )
+  return (
+    <Provider theme={defaultTheme} colorScheme='light'>
+      <Content width="100%">
+        {
+          isLoading ? (
+            <Spinner />
+          ) : (
+            <Form isRequired isDisabled={isSaving}>
+              <TextField value={slackWebhook} onChange={setSlackWebhook} label="Slack Webhook URL"/>
+              <TextField value={slackChannel} onChange={setSlackChannel} label="Slack Channel"/>
 
-     if (res.error) {
-       setRequestStatus("Request Failure")
-       setRequestMessage(res.error)
-     } else {
-       setRequestStatus("Request Success")
-       setRequestMessage("Slack configuration was saved successfully.")
-       // onCloseHandler()
-     }
-     setIsRequestComplete(true)
-     console.log(res)
-     setIsSaving(false)
- }
-
- return (
-   <Provider theme={defaultTheme} colorScheme='light'>
-     <Content width="100%">
-       {
-         isLoading ? (
-           <Spinner />
-         ) : (
-           <Form isRequired isDisabled={isSaving}>
-             <TextField value={slackWebhook} onChange={setSlackWebhook} label="Slack Webhook URL"/>
-             <TextField value={slackChannel} onChange={setSlackChannel} label="Slack Channel"/>
-
-             <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
-               {isSaving && <ProgressCircle size="S" aria-label="Saving..." isIndeterminate />}
-               <ButtonGroup align="end">
-                 <Button variant="primary" onClick={onCloseHandler}>Close</Button>
-                 <Button variant="secondary" onClick={onHelpHandler}>Help</Button>
-                 <Button variant="cta" onClick={onSaveHandler}>Save</Button>
-               </ButtonGroup>
-             </Flex>
-           </Form>
-         )
-       }
-       <View height="size-300" />
-       {isRequestComplete && (
-         <IllustratedMessage>
-           <Heading>{requestStatus}</Heading>
-           <Content>{requestMessage}</Content>
-         </IllustratedMessage>
-       )}
-     </Content>
-   </Provider>
- )
+              <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
+                {isSaving && <ProgressCircle size="S" aria-label="Saving..." isIndeterminate />}
+                <ButtonGroup align="end">
+                  <Button variant="primary" onClick={onCloseHandler}>Close</Button>
+                  <Button variant="secondary" onClick={onHelpHandler}>Help</Button>
+                  <Button variant="cta" onClick={onSaveHandler}>Save</Button>
+                </ButtonGroup>
+              </Flex>
+            </Form>
+          )
+        }
+        <View height="size-300" />
+        {isRequestComplete && (
+          <IllustratedMessage>
+            <Heading>{status}</Heading>
+            <Content>{message}</Content>
+          </IllustratedMessage>
+        )}
+      </Content>
+    </Provider>
+  )
 }

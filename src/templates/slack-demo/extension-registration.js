@@ -12,62 +12,69 @@
 
 import { generatePath } from "react-router"
 import { Text } from "@adobe/react-spectrum"
-import { createGuest } from "@adobe/uix-guest"
+import { register } from "@adobe/uix-guest"
+
+import { extensionId } from "./Constants"
 
 function ExtensionRegistration() {
-  const guestConnection = createGuest({ id: "custom-buttons-management" })
-  
-  guestConnection.register({
-    actionBar: {
-      getButton() {
-        return {
-          id: 'notify-slack',
-          label: 'Notify Slack',
-          icon: 'Send'
+  const init = async () => {
+    const guestConnection = await register({
+      id: extensionId,
+      methods: {
+        actionBar: {
+          getButton() {
+            return {
+              id: 'notify-slack',
+              label: 'Notify Slack',
+              icon: 'PublishCheck'
+            }
+          },
+          
+          onClick(selections) {
+            var selectionNames = ""
+            var selectionTitles = ""
+    
+            selections.forEach((selection) => {
+              selectionNames = selectionNames.concat(selection.name, ' | ')
+              selectionTitles = selectionTitles.concat(selection.title, '\n')
+            })
+            console.log("Selection Names: ", selectionNames)
+            console.log("Selection Titles: ", selectionTitles)
+    
+            const modalURL = "/index.html#" + generatePath("/content-fragment/:fragmentNames/:fragmentTitles/notify-slack-modal", {
+              fragmentNames: encodeURIComponent(selectionNames),
+              fragmentTitles: encodeURIComponent(selectionTitles)
+            })
+            console.log("Modal URL: ", modalURL)
+    
+            guestConnection.host.modal.showUrl({
+              title: 'Notify Slack',
+              url: modalURL
+            })
+          }
+        },
+        headerMenu: {
+          getButton() {
+            return {
+              id: 'configure-slack',
+              label: 'Configure Slack',
+              icon: 'OpenIn'
+            }
+          },
+          onClick() {
+            const modalURL = "/index.html#/configure-slack-modal"
+            console.log("Modal URL: ", modalURL)
+    
+            guestConnection.host.modal.showUrl({
+              title: 'Configure Slack',
+              url: modalURL
+            })
+          }
         }
-    },
-      onClick(selections) {
-        var selectionNames = ""
-        var selectionTitles = ""
-
-        selections.forEach((selection) => {
-          selectionNames = selectionNames.concat(selection.name, ' | ')
-          selectionTitles = selectionTitles.concat(selection.title, '\n')
-        })
-        console.log("Selection Names: ", selectionNames)
-        console.log("Selection Titles: ", selectionTitles)
-
-        const modalURL = "/index.html#" + generatePath("/content-fragment/:fragmentNames/:fragmentTitles/notify-slack-modal", {
-          fragmentNames: encodeURIComponent(selectionNames),
-          fragmentTitles: encodeURIComponent(selectionTitles)
-        })
-        console.log("Modal URL: ", modalURL)
-
-        guestConnection.host.modal.showUrl({
-          title: 'Notify Slack',
-          url: modalURL
-        })
       }
-    },
-    headerMenu: {
-      getButton() {
-        return {
-          id: 'configure-slack',
-          label: 'Configure Slack',
-          icon: 'Gears'
-        }
-      },
-      onClick() {
-        const modalURL = "/index.html#/configure-slack-modal"
-        console.log("Modal URL: ", modalURL)
-
-        guestConnection.host.modal.showUrl({
-          title: 'Configure Slack',
-          url: modalURL
-        })
-      }
-    }
-  })
+    })
+  }
+  init().catch(console.error)
 
   return <Text>IFrame for integration with Host (AEM)...</Text>
 }

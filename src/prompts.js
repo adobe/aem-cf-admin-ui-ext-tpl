@@ -38,7 +38,7 @@ const promptTopLevelFields = (manifest) => {
   return inquirer.prompt([
     {
       type: 'input',
-      name: 'displayName',
+      name: 'name',
       message: "What do you want to name your extension?",
       validate(answer) {
         if (!answer.length) {
@@ -75,8 +75,16 @@ const promptTopLevelFields = (manifest) => {
     }
   ])
   .then((answers) => {
-    if (answers.displayName) {
-      manifest.displayName = answers.displayName
+    if (answers.name) {
+      manifest.name = answers.name
+      manifest.id = slugify(answers.name, {
+        replacement: '-',  // replace spaces with replacement character, defaults to `-`
+        remove: undefined, // remove characters that match regex, defaults to `undefined`
+        lower: true,       // convert to lower case, defaults to `false`
+        strict: true,      // strip special characters except replacement, defaults to `false`
+        locale: 'vi',      // language code of the locale to use
+        trim: true         // trim leading and trailing replacement chars, defaults to `true`
+      })
     }
 
     if (answers.description) {
@@ -239,7 +247,8 @@ const promptGuideMenu = (manifest) => {
         const slackDemoManifest = readManifest(SLACK_DEMO_MANIFEST_PATH)
 
         // Update the extension manifest object
-        manifest['displayName'] = slackDemoManifest['displayName'] || null
+        manifest['name'] = slackDemoManifest['name'] || null
+        manifest['id'] = slackDemoManifest['id'] || null
         manifest['description'] = slackDemoManifest['description'] || null
         manifest['version'] = slackDemoManifest['version'] || null
         manifest['templateFolder'] = slackDemoManifest['templateFolder'] || null

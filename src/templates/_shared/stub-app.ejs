@@ -18,7 +18,7 @@ import ExtensionRegistration from "./ExtensionRegistration"
 import <%- modalFileName %> from "./<%- modalFileName %>"
 <% }}) -%>
 
-function App() {
+function App(props) {
   return (
     <Router>
       <ErrorBoundary onError={onError} FallbackComponent={fallbackComponent}>

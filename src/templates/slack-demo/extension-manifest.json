@@ -1,5 +1,6 @@
 {
-  "displayName": "Slack Demo",
+  "name": "Slack UI Extension Demo",
+  "id": "slack-ui-extension-demo",
   "description": "Demo Extension to showcase custom buttons within AEM Content Fragment Admin UI",
   "version": "0.0.1",
   "templateFolder": "slack-demo",
@@ -20,18 +21,6 @@
   "runtimeActions": [
     {
       "name": "notify-slack"
-    },
-    {
-      "name": "get-slack-config"
-    },
-    {
-      "name": "set-slack-config"
     }
-  ],
-  "templateInputs": {
-    "LOG_LEVEL": "debug",
-    "SLACK_WEBHOOK": "$SLACK_WEBHOOK",
-    "SLACK_CHANNEL": "$SLACK_CHANNEL"
-  },
-  "templateDotEnvVars": ["SLACK_WEBHOOK", "SLACK_CHANNEL"]
+  ]
 }

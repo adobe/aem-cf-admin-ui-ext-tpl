@@ -26,6 +26,8 @@ import { useParams } from "react-router-dom"
 import allActions from '../config.json'
 import actionWebInvoke from '../utils'
 
+import { extensionId } from "./Constants"
+
 export default function <%- functionName %> () {
   // Fields
   const [guestConnection, setGuestConnection] = useState()
@@ -40,7 +42,7 @@ export default function <%- functionName %> () {
 
   useEffect(() => {
     (async () => {
-      const guestConnection = await attach({ id: "custom-buttons-management" })
+      const guestConnection = await attach({ id: extensionId })
 
       setGuestConnection(guestConnection)
     })()

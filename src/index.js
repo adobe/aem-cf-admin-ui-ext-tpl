@@ -48,11 +48,9 @@ class MainGenerator extends Generator {
     this.extFolder = 'src/aem/cf-console-admin-1'
     this.actionFolder = path.join(this.extFolder, 'actions')
     
-    // todo support multi UI (could be one for each operation)
     this.webSrcFolder = path.join(this.extFolder, 'web-src')
     this.extConfigPath = path.join(this.extFolder, 'ext.config.yaml')
     this.configName = 'aem/cf-console-admin/1'
-    // this.extFolder = path.join(this.extFolder, 'item-menu')
 
     this.extensionManifest = readManifest(EXTENSION_MANIFEST_PATH)
   }

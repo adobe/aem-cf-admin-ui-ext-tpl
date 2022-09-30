@@ -27,13 +27,7 @@ try {
 function bootstrapRaw () {
   /* **here you can mock the exc runtime and ims objects** */
   const mockRuntime = { on: () => {} }
-  const mockIms = {
-    profile: {
-      userId: new Date().toDateString()
-    },
-    org: null,
-    token: null
-  }
+  const mockIms = {}
 
   // render the actual react application and pass along the runtime object to make it available to the App
   ReactDOM.render(
@@ -72,8 +66,8 @@ function bootstrapInExcShell () {
   // set solution info, shortTitle is used when window is too small to display full title
   runtime.solution = {
     icon: 'AdobeExperienceCloud',
-    title: '<%- extensionManifest.displayName %>',
+    title: '<%- extensionManifest.name %>',
     shortTitle: 'JGR'
   }
-  runtime.title = '<%- extensionManifest.displayName %>'
+  runtime.title = '<%- extensionManifest.name %>'
 }

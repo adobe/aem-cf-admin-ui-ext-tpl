@@ -30,6 +30,9 @@ import allActions from '../config.json'
 import actionWebInvoke from '../utils'
 import { IllustratedMessage } from '@adobe/react-spectrum'
 
+import { extensionId } from "./Constants"
+
+
 export default function <%- functionName %> ({ims}) {
   // Fields
   const [slackMessage, setSlackMessage] = useState('')
@@ -50,7 +53,7 @@ export default function <%- functionName %> ({ims}) {
 
   useEffect(() => {
     (async () => {
-      const guestConnection = await attach({ id: "custom-buttons-management" })
+      const guestConnection = await attach({ id: extensionId })
 
       setGuestConnection(guestConnection)
       setSlackMessage(fragmentNames)
@@ -72,7 +75,8 @@ export default function <%- functionName %> ({ims}) {
       allActions['notify-slack'],
       {},
       {
-        'userId': ims.profile.userId,
+        'slackWebhook': localStorage.getItem('slackWebhook'),
+        'slackChannel':  localStorage.getItem('slackChannel'),
         'slackText': slackMessage + `\n\nSelected Fragment Title(s):\n${fragmentTitles}`
       }
     )
@@ -83,7 +87,6 @@ export default function <%- functionName %> ({ims}) {
     } else {
       setRequestStatus("Request Success")
       setRequestMessage("The Slack notification was sent successfully.")
-      // onCloseHandler()
     }
     setIsRequestComplete(true)
     console.log(res)

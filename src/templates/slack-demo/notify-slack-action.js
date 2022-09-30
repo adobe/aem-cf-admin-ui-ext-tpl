@@ -33,44 +33,23 @@ async function main (params) {
     logger.debug(stringParameters(params))
 
     // check for missing request input parameters and headers
-    const requiredParams = ['userId', 'slackText']
+    const requiredParams = ['slackWebhook', 'slackChannel', 'slackText']
     const errorMessage = checkMissingRequestInputs(params, requiredParams)
     if (errorMessage) {
       // return and log client errors
       return errorResponse(400, errorMessage, logger)
     }
 
-    var paramsData = JSON.parse(JSON.stringify(params))
-
-    const state = await stateLib.init()
-    const storedUser = await state.get(`${params.userId}`)
-    var slackConfig = {}
-
-    if (storedUser) {
-      // exists
-      logger.debug(storedUser)
-      slackConfig = storedUser.value
-    } else {
-      // new user
-      slackConfig = {
-        "slackWebhook": `${params.SLACK_WEBHOOK}`,
-        "slackChannel": `${params.SLACK_CHANNEL}`
-      }
-
-      await state.put(`${params.userId}`, slackConfig, { ttl: 60 })
-    }
-
     // fetch content from external api endpoint
     var payload = {
-      // "channel": `${params.SLACK_CHANNEL}`,
-      "channel": slackConfig.slackChannel,
+      "channel": params.slackChannel,
       "username": "incoming-webhook",
       "text": params.slackText,
       "mrkdwn": true
     }
   
-    console.log(`${params.SLACK_WEBHOOK}`)
-    const res = await fetch(slackConfig.slackWebhook, {
+    // console.log(`${params.SLACK_WEBHOOK}`)
+    const res = await fetch(params.slackWebhook, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -78,11 +57,9 @@ async function main (params) {
       body: JSON.stringify(payload)
     })
     if (!res.ok) {
-      // throw new Error('request to ' + `${params.SLACK_WEBHOOK}` + ' failed with status code ' + res.status)
       return errorResponse(res.status, 'Something is wrong with your Slack configuration.', logger)
     }
-    // const content = await res.json()
-    // const responseObj = JSON.parse(JSON.stringify(content))
+
     const response = {
       statusCode: 200,
       body: {
@@ -102,4 +79,3 @@ async function main (params) {
 }
 
 exports.main = main
- 

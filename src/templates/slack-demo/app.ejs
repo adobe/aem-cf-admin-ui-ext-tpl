@@ -42,7 +42,7 @@ function App(props) {
               <% if (button.needsModal) { %>
           <Route
             exact path="content-fragment/:fragmentNames/:fragmentTitles/<%- button.id %>-modal"
-            element={<<%- button.label.replace(/ /g, '') %>Modal ims={props.ims} />}
+            element={<<%- button.label.replace(/ /g, '') %>Modal />}
           />
           <% }})} -%>
           <% if (extensionManifest.headerMenuButtons) { -%>
@@ -50,7 +50,7 @@ function App(props) {
               <% if (button.needsModal) { %>
           <Route
             exact path="<%- button.id %>-modal"
-            element={<<%- button.label.replace(/ /g, '') %>Modal ims={props.ims} />}
+            element={<<%- button.label.replace(/ /g, '') %>Modal />}
           />
           <% }})} %>
         </Routes>
