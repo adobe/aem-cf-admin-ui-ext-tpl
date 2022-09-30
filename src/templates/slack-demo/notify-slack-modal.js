@@ -36,8 +36,8 @@ import { extensionId } from "./Constants"
 export default function <%- functionName %> ({ims}) {
   // Fields
   const [slackMessage, setSlackMessage] = useState('')
-  const [requestStatus, setRequestStatus] = useState('')
-  const [requestMessage, setRequestMessage] = useState('')
+  const [status, setStatus] = useState('')
+  const [message, setMessage] = useState('')
   const [guestConnection, setGuestConnection] = useState()
   const { fragmentNames, fragmentTitles } = useParams()
 
@@ -82,11 +82,11 @@ export default function <%- functionName %> ({ims}) {
     )
 
     if (res.error) {
-      setRequestStatus("Request Failure")
-      setRequestMessage(res.error)
+      setStatus("Request Failure")
+      setMessage(res.error)
     } else {
-      setRequestStatus("Request Success")
-      setRequestMessage("The Slack notification was sent successfully.")
+      setStatus("Request Success")
+      setMessage("The Slack notification was sent successfully.")
     }
     setIsRequestComplete(true)
     console.log(res)
@@ -108,8 +108,8 @@ export default function <%- functionName %> ({ims}) {
         <View height="size-300" />
         {isRequestComplete && (
           <IllustratedMessage>
-            <Heading>{requestStatus}</Heading>
-            <Content>{requestMessage}</Content>
+            <Heading>{status}</Heading>
+            <Content>{message}</Content>
           </IllustratedMessage>
         )}
       </Content>
