@@ -18,7 +18,6 @@ Extensibility Template for AEM Content Fragment Admin UI
 - `nodejs` (v14) and `npm` installed locally - https://nodejs.org/en/
 - `aio` command line tool - https://github.com/adobe/aio-cli, https://developer.adobe.com/runtime/docs/guides/tools/cli_install/
 - Project in Adobe developer console
-- Credentials in the project from previous point
 
 # Installation
 - `npm install -g @adobe/aio-cli-next` (Pre-released functionalities for AIO CLI)
@@ -26,10 +25,12 @@ Extensibility Template for AEM Content Fragment Admin UI
 # Usage
 - `aio-next app init <your-folder-name>`
 
+# Disclaimer
+The use of this template via `aio app init` command requires certain npm packages that are only available in private Adobe repositories. In the future, those npm packages will be made available in the npm public registry.
+
 # Contributing
 Contributions are welcomed! Read the [Contributing Guide](CONTRIBUTING.md) for more information.
 
 
 # Licensing
-
 This project is licensed under the Apache V2 License. See [LICENSE](LICENSE) for more information.
