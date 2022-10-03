@@ -20,16 +20,11 @@ Extensibility Template for AEM Content Fragment Admin UI
 - Project in Adobe developer console
 - Credentials in the project from previous point
 
-# Additional Plugin Requirements
-1. [@adobe/aio-cli-plugin-app-templates 1.2.0](https://github.com/adobe/aio-cli-plugin-app-templates)
-2. [@adobe/aio-cli-plugin-app (Switch to 'story/ACNA-1650' branch)](https://github.com/adobe/aio-cli-plugin-app)
+# Installation
+- `npm install -g @adobe/aio-cli-next` (Pre-released functionalities for AIO CLI)
 
 # Usage
-1. `git clone <template-url>` & `npm install`
-2. `aio app init <your-project-name> --template <relative-path-to-template-folder-from-project-root>`
-    OR
-   `aio app init <your-project-name> --template <absolute-path-to-template-folder>`
-3. `Work in progress...`
+- `aio-next app init <your-folder-name>`
 
 # Contributing
 Contributions are welcomed! Read the [Contributing Guide](CONTRIBUTING.md) for more information.
