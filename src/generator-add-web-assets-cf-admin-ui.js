@@ -34,11 +34,12 @@ class CFAdminUIGenerator extends Generator {
 
   writing () {
     this.destFolder = this.options['web-src-folder']
-    this.sourceRoot(path.join(__dirname, './templates/web'))
+    this.sourceRoot(path.join(__dirname, '.'))
+    // this.sourceRoot(path.join(__dirname, './templates/web'))
 
     // Copy all the static files
     this.fs.copyTpl(
-      this.templatePath('./**/*'),
+      this.templatePath('./templates/web/**/*'),
       this.destinationPath(this.destFolder),
       this.props
     )
@@ -50,7 +51,8 @@ class CFAdminUIGenerator extends Generator {
     this._generateExtensionRegistration()
     
     // Generate React component files for custom buttons that needs to show a modal
-    this._generateModalFiles()
+    this._generateModalFiles('actionBar')
+    this._generateModalFiles('headerMenu')
 
     // add .babelrc
     /// NOTE this is a global file and might conflict
@@ -62,7 +64,7 @@ class CFAdminUIGenerator extends Generator {
       '@adobe/aio-sdk': commonDependencyVersions['@adobe/aio-sdk'],
       '@adobe/exc-app': '^0.2.21',
       '@adobe/react-spectrum': '^3.4.0',
-      // '@adobe/uix-guest': '^0.2.3',
+      '@adobe/uix-guest': '^0.5.3',
       '@react-spectrum/list': '^3.0.0-rc.0',
       '@spectrum-icons/workflow': '^3.2.0',
       'core-js': '^3.6.4',
@@ -71,7 +73,6 @@ class CFAdminUIGenerator extends Generator {
       'react': '^16.13.1',
       'react-dom': '^16.13.1',
       'react-error-boundary': '^1.2.5',
-      'react-penpal': '^1.0.4',
       'react-router-dom': '^6.3.0',
       'regenerator-runtime': '^0.13.5'
     })
@@ -90,7 +91,13 @@ class CFAdminUIGenerator extends Generator {
   }
 
   _generateAppRoute() {
-    const relativeTemplatePath = '../_shared/stub-app.ejs'
+    // Generic Project
+    var relativeTemplatePath = './templates/_shared/stub-app.ejs'
+
+    // Demo Project
+    if (this.props.extensionManifest.templateFolder) {
+      relativeTemplatePath = `./templates/${this.props.extensionManifest.templateFolder}/app.ejs`
+    }
 
     this.fs.copyTpl(
       this.templatePath(relativeTemplatePath),
@@ -101,11 +108,11 @@ class CFAdminUIGenerator extends Generator {
 
   _generateExtensionRegistration() {
     // Generic Project
-    var relativeTemplatePath = '../_shared/stub-generic-extension-registration.ejs'
+    var relativeTemplatePath = './templates/_shared/stub-extension-registration.ejs'
     
     // Demo Project
     if (this.props.extensionManifest.templateFolder) {
-      relativeTemplatePath = `../${this.props.extensionManifest.templateFolder}/stub-extension-registration.js`
+      relativeTemplatePath = `./templates/${this.props.extensionManifest.templateFolder}/extension-registration.js`
     }
 
     this.fs.copyTpl(
@@ -115,26 +122,30 @@ class CFAdminUIGenerator extends Generator {
     )
   }
 
-  _generateModalFiles() {
+  _generateModalFiles(extensionArea) {
     // Generic Project
-    var relativeTemplatePath = '../_shared/stub-generic-modal.ejs'
-    
-    // Demo Project
-    if (this.props.extensionManifest.templateFolder) {
-      relativeTemplatePath = `../${this.props.extensionManifest.templateFolder}/stub-modal.ejs`
+    var relativeTemplatePath = './templates/_shared/stub-modal.ejs'
+    var customButtons = undefined
+
+    if (extensionArea === 'actionBar') {
+      customButtons = this.props.extensionManifest.actionBarButtons || []
+    } else if (extensionArea === 'headerMenu') {
+      customButtons = this.props.extensionManifest.headerMenuButtons || []
     }
 
-    const actionBarButtons = this.props.extensionManifest.actionBarButtons || []
-    const headerMenuButtons = this.props.extensionManifest.headerMenuButtons || []
-    const allCustomButtons = actionBarButtons.concat(headerMenuButtons)
-
-    allCustomButtons.forEach((button) => {
+    customButtons.forEach((button) => {
       if (button.needsModal) {
+        // Demo Project
+        if (this.props.extensionManifest.templateFolder) {
+          relativeTemplatePath = `./templates/${this.props.extensionManifest.templateFolder}/${button.id}-modal.js`
+        }
+        
         const modalFileName = button.label.replace(/ /g, '') + 'Modal'
         this.fs.copyTpl(
           this.templatePath(relativeTemplatePath),
           this.destinationPath(path.join(this.destFolder, `./src/components/${modalFileName}.js`)), {
-            functionName: modalFileName
+            functionName: modalFileName,
+            extensionArea: extensionArea
           }
         )
       }

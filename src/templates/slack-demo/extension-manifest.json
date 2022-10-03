@@ -1,31 +1,26 @@
 {
-  "displayName": "Slack Demo",
-  "description": "Demo to showcase a custom button that sends the selected Content Fragments info to Slack",
+  "name": "Slack UI Extension Demo",
+  "id": "slack-ui-extension-demo",
+  "description": "Demo Extension to showcase custom buttons within AEM Content Fragment Admin UI",
   "version": "0.0.1",
   "templateFolder": "slack-demo",
   "actionBarButtons": [
     {
-      "label": "Send to Slack",
+      "label": "Notify Slack",
       "needsModal": true,
-      "id": "send-to-slack"
+      "id": "notify-slack"
     }
   ],
   "headerMenuButtons": [
     {
-      "label": "Test Slack",
+      "label": "Configure Slack",
       "needsModal": true,
-      "id": "test-slack"
+      "id": "configure-slack"
     }
   ],
   "runtimeActions": [
     {
       "name": "notify-slack"
     }
-  ],
-  "templateInputs": {
-    "LOG_LEVEL": "debug",
-    "SLACK_WEBHOOK": "$SLACK_WEBHOOOK",
-    "SLACK_CHANNEL": "$SLACK_CHANNEL"
-  },
-  "templateDotEnvVars": ["SLACK_WEBHOOOK", "SLACK_CHANNEL"]
+  ]
 }

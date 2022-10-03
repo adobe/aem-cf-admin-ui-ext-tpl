@@ -48,11 +48,9 @@ class MainGenerator extends Generator {
     this.extFolder = 'src/aem/cf-console-admin-1'
     this.actionFolder = path.join(this.extFolder, 'actions')
     
-    // todo support multi UI (could be one for each operation)
     this.webSrcFolder = path.join(this.extFolder, 'web-src')
     this.extConfigPath = path.join(this.extFolder, 'ext.config.yaml')
     this.configName = 'aem/cf-console-admin/1'
-    // this.extFolder = path.join(this.extFolder, 'item-menu')
 
     this.extensionManifest = readManifest(EXTENSION_MANIFEST_PATH)
   }
@@ -63,8 +61,8 @@ class MainGenerator extends Generator {
       .then(() => promptMainMenu(this.extensionManifest))
       .then(() => writeManifest(this.extensionManifest, EXTENSION_MANIFEST_PATH))
       .then(() => {
-        this.log("\Extension Manifest for Pre-generating Code")
-        this.log("---------------------------------------")
+        this.log("\nExtension Manifest for Code Pre-generation")
+        this.log("------------------------------------------")
         this.log(JSON.stringify(this.extensionManifest, null, '  '))
       })
   }
@@ -143,9 +141,8 @@ class MainGenerator extends Generator {
   async end () {
     this.log('\nSample code files have been generated.\n')
     this.log('Next steps:')
-    this.log('1) Check that you have the "aio-cli-plugin-extension" plugin installed, `aio plugins install @adobe/aio-cli-plugin-extension`')
-    this.log('2) Populate your local environment variables in the ".env" file')
-    this.log('3) Now you can use `aio app run` or `aio app deploy` to see sample code files in action')
+    this.log('1) Populate your local environment variables in the ".env" file')
+    this.log('2) You can use `aio app run` or `aio app deploy` to see the sample code files in action')
     this.log('\n')
   }
 }

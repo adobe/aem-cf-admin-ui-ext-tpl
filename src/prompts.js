@@ -23,13 +23,13 @@ var exitMenu = false
 const briefOverviews = {
   templateInfo: `\nAEM Content Fragment Admin UI Template Overview:\n
   * You have the option to generate boilerpate code for your extensible buttons.
-  * You can check out a sample demo project.
   * You can get help regarding documentation at any time from the menu.
+  * You can check out a sample demo project.
   * An App Builder project will be created with Node.js packages pre-configured.\n`
 }
 
 const promptDocs = {
-  mainDoc: "https://www.example.com/main-doc",
+  mainDoc: "https://git.corp.adobe.com/pages/dx-devex-acceleration/uix-docs/overview/",
   sampleProject: "https://www.example.com/project"
 }
 
@@ -38,7 +38,7 @@ const promptTopLevelFields = (manifest) => {
   return inquirer.prompt([
     {
       type: 'input',
-      name: 'displayName',
+      name: 'name',
       message: "What do you want to name your extension?",
       validate(answer) {
         if (!answer.length) {
@@ -75,8 +75,16 @@ const promptTopLevelFields = (manifest) => {
     }
   ])
   .then((answers) => {
-    if (answers.displayName) {
-      manifest.displayName = answers.displayName
+    if (answers.name) {
+      manifest.name = answers.name
+      manifest.id = slugify(answers.name, {
+        replacement: '-',  // replace spaces with replacement character, defaults to `-`
+        remove: undefined, // remove characters that match regex, defaults to `undefined`
+        lower: true,       // convert to lower case, defaults to `false`
+        strict: true,      // strip special characters except replacement, defaults to `false`
+        locale: 'vi',      // language code of the locale to use
+        trim: true         // trim leading and trailing replacement chars, defaults to `true`
+      })
     }
 
     if (answers.description) {
@@ -148,13 +156,17 @@ const nestedButtonPrompts = (manifest, manifestNodeName) => {
       answers.id = slugify(answers.label, {
         replacement: '-',  // replace spaces with replacement character, defaults to `-`
         remove: undefined, // remove characters that match regex, defaults to `undefined`
-        lower: true,      // convert to lower case, defaults to `false`
-        strict: true,     // strip special characters except replacement, defaults to `false`
+        lower: true,       // convert to lower case, defaults to `false`
+        strict: true,      // strip special characters except replacement, defaults to `false`
         locale: 'vi',      // language code of the locale to use
         trim: true         // trim leading and trailing replacement chars, defaults to `true`
       })
       // console.log(JSON.stringify(answers, null, '  '))
       manifest[manifestNodeName] = manifest[manifestNodeName] || []
+      if (manifest[manifestNodeName].length + 1 > 1) {
+        console.log(chalk.red(chalk.bold("The creation of multiple buttons is not yet supported.\n")))
+        return
+      }
       manifest[manifestNodeName].push(answers)
     })
     .catch((error) => {
@@ -235,7 +247,8 @@ const promptGuideMenu = (manifest) => {
         const slackDemoManifest = readManifest(SLACK_DEMO_MANIFEST_PATH)
 
         // Update the extension manifest object
-        manifest['displayName'] = slackDemoManifest['displayName'] || null
+        manifest['name'] = slackDemoManifest['name'] || null
+        manifest['id'] = slackDemoManifest['id'] || null
         manifest['description'] = slackDemoManifest['description'] || null
         manifest['version'] = slackDemoManifest['version'] || null
         manifest['templateFolder'] = slackDemoManifest['templateFolder'] || null
