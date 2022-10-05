@@ -22,7 +22,7 @@ var exitMenu = false
 
 const briefOverviews = {
   templateInfo: `\nAEM Content Fragment Admin UI Template Overview:\n
-  * You have the option to generate boilerpate code for your extensible buttons.
+  * You have the option to generate boilerplate code for your extensible buttons.
   * You can get help regarding documentation at any time from the menu.
   * You can check out a sample demo project.
   * An App Builder project will be created with Node.js packages pre-configured.\n`
