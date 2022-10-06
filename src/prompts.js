@@ -21,7 +21,7 @@ const SLACK_DEMO_MANIFEST_PATH = path.join(__dirname, './templates/slack-demo/ex
 var exitMenu = false
 
 const briefOverviews = {
-  templateInfo: `\nAEM Content Fragment Admin UI Template Overview:\n
+  templateInfo: `\nAEM Content Fragment Console Template Overview:\n
   * You have the option to generate boilerplate code for your extensible buttons.
   * You can get help regarding documentation at any time from the menu.
   * You can check out a sample demo project.
