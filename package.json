@@ -1,6 +1,6 @@
 {
   "name": "@adobe/aem-cf-admin-ui-ext-tpl",
-  "version": "1.0.0-beta.6",
+  "version": "1.0.0-beta.7",
   "main": "src/index.js",
   "description": "Extensibility Template for AEM Content Fragment Console",
   "engines": {
