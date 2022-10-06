@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 # @adobe/aem-cf-admin-ui-ext-tpl
 
-Extensibility Template for AEM Content Fragment Admin UI
+Extensibility Template for AEM Content Fragment Console
 
 # Prerequisites
 - `nodejs` (v14) and `npm` installed locally - https://nodejs.org/en/
