@@ -15,6 +15,7 @@ import { useParams } from "react-router-dom"
 import { attach } from "@adobe/uix-guest"
 import {
   Flex,
+  Form,
   ProgressCircle,
   Provider,
   Content,
@@ -23,12 +24,13 @@ import {
   ButtonGroup,
   Button,
   Heading,
-  View
+  View,
+  IllustratedMessage
 } from '@adobe/react-spectrum'
 
 import allActions from '../config.json'
 import actionWebInvoke from '../utils'
-import { IllustratedMessage } from '@adobe/react-spectrum'
+import Spinner from "./Spinner"
 
 import { extensionId } from "./Constants"
 
@@ -38,16 +40,19 @@ export default function <%- functionName %> () {
   const [slackMessage, setSlackMessage] = useState('')
   const [status, setStatus] = useState('')
   const [message, setMessage] = useState('')
+  const [slackWebhook, setSlackWebhook] = useState('')
+  const [slackChannel, setSlackChannel] = useState('')
   const [guestConnection, setGuestConnection] = useState()
   const { fragmentNames, fragmentTitles } = useParams()
 
   // Action state
+  const [isLoading, setIsLoading] = useState(true)
   const [isNotifying, setIsNotifying] = useState(false)
   const [isRequestComplete, setIsRequestComplete] = useState(false)
 
   
   if (!(fragmentNames || fragmentTitles)) {
-    console.error("fragmentNames parameter is missing")
+    console.error("fragment parameters are missing")
     return
   }
 
@@ -57,6 +62,23 @@ export default function <%- functionName %> () {
 
       setGuestConnection(guestConnection)
       setSlackMessage(fragmentNames)
+
+      const res = await actionWebInvoke(
+        allActions['get-slack-config'],
+        {},
+        {},
+        { 'method': 'GET' }
+      )
+ 
+      if (res.error) {
+        console.log(res.error.message)
+      } else {
+        setSlackWebhook(res.slackWebhook)
+        setSlackChannel(res.slackChannel)
+      }
+ 
+      console.log(res)
+      setIsLoading(false)
     })()
   }, [])
 
@@ -72,11 +94,11 @@ export default function <%- functionName %> () {
     setIsNotifying(true)
 
     const res = await actionWebInvoke(
-      allActions['notify-slack'],
+      allActions['export-to-slack'],
       {},
       {
-        'slackWebhook': localStorage.getItem('slackWebhook'),
-        'slackChannel':  localStorage.getItem('slackChannel'),
+        'slackWebhook': slackWebhook,
+        'slackChannel':  slackChannel,
         'slackText': slackMessage + `\n\nSelected Fragment Title(s):\n${fragmentTitles}`
       }
     )
@@ -96,22 +118,30 @@ export default function <%- functionName %> () {
   return (
     <Provider theme={defaultTheme} colorScheme='light'>
       <Content width="100%">
-        <TextField value={slackMessage} onChange={setSlackMessage} label="Message" width="100%"/>
+      {
+        isLoading ? (
+          <Spinner />
+        ) : (
+          <Form>
+            <TextField value={slackMessage} onChange={setSlackMessage} label="Message"/>
 
-        <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
-          {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
-          <ButtonGroup align="end">
-            <Button variant="primary" onClick={onCloseHandler}>Close</Button>
-            <Button variant="cta" onClick={onNotifySlackHandler}>Send</Button>
-          </ButtonGroup>
-        </Flex>
-        <View height="size-300" />
-        {isRequestComplete && (
-          <IllustratedMessage>
-            <Heading>{status}</Heading>
-            <Content>{message}</Content>
-          </IllustratedMessage>
-        )}
+            <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
+              {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
+              <ButtonGroup marginStart="size-200">
+                <Button variant="primary" onClick={onCloseHandler}>Close</Button>
+                <Button variant="cta" onClick={onNotifySlackHandler}>Send</Button>
+              </ButtonGroup>
+            </Flex>
+            <View height="size-300" />
+            {isRequestComplete && (
+              <IllustratedMessage>
+                <Heading>{status}</Heading>
+                <Content>{message}</Content>
+              </IllustratedMessage>
+            )}
+          </Form>
+        )
+      }
       </Content>
     </Provider>
   )

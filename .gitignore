@@ -1,11 +1,15 @@
 
-# package directories
+# Package Directories
 node_modules
 
+# Dependency Management
+package-lock.json
+
+# App Builder
 .env*
 .aio
 
-# Test output
+# Test Output
 junit.xml
 
 # IDE & Temp
@@ -21,5 +25,5 @@ coverage
 # OSX
 .DS_Store
 
-# yeoman
+# Yeoman
 .yo-repository

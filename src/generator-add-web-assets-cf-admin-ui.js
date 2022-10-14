@@ -112,7 +112,7 @@ class CFAdminUIGenerator extends Generator {
     
     // Demo Project
     if (this.props.extensionManifest.templateFolder) {
-      relativeTemplatePath = `./templates/${this.props.extensionManifest.templateFolder}/extension-registration.js`
+      relativeTemplatePath = `./templates/${this.props.extensionManifest.templateFolder}/extension-registration.ejs`
     }
 
     this.fs.copyTpl(

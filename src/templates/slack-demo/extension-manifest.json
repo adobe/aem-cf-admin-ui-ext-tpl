@@ -6,21 +6,30 @@
   "templateFolder": "slack-demo",
   "actionBarButtons": [
     {
-      "label": "Notify Slack",
+      "label": "Export to Slack",
       "needsModal": true,
-      "id": "notify-slack"
+      "id": "export-to-slack"
     }
   ],
   "headerMenuButtons": [
     {
-      "label": "Configure Slack",
+      "label": "Slack Settings",
       "needsModal": true,
-      "id": "configure-slack"
+      "id": "slack-settings"
     }
   ],
   "runtimeActions": [
     {
-      "name": "notify-slack"
+      "name": "export-to-slack"
+    },
+    {
+      "name": "get-slack-config"
     }
-  ]
+  ],
+  "templateInputs": {
+    "LOG_LEVEL": "debug",
+    "SLACK_WEBHOOK": "$SLACK_WEBHOOK",
+    "SLACK_CHANNEL": "$SLACK_CHANNEL"
+  },
+  "templateDotEnvVars": ["SLACK_WEBHOOK", "SLACK_CHANNEL"]
 }

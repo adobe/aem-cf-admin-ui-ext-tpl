@@ -24,13 +24,17 @@ function ExtensionRegistration() {
         actionBar: {
           getButton() {
             return {
-              id: 'notify-slack',
-              label: 'Notify Slack',
-              icon: 'PublishCheck'
+              <% extensionManifest.actionBarButtons.forEach((button) => { %>
+                'id': '<%- button.id %>',
+                'label': '<%- button.label %>',
+                'icon': 'PublishCheck'
+              <% }) %>
             }
           },
           
           onClick(selections) {
+            <% extensionManifest.actionBarButtons.forEach((button) => { -%>
+              <% if (button.needsModal) { %>
             var selectionNames = ""
             var selectionTitles = ""
     
@@ -40,35 +44,42 @@ function ExtensionRegistration() {
             })
             console.log("Selection Names: ", selectionNames)
             console.log("Selection Titles: ", selectionTitles)
-    
-            const modalURL = "/index.html#" + generatePath("/content-fragment/:fragmentNames/:fragmentTitles/notify-slack-modal", {
-              fragmentNames: encodeURIComponent(selectionNames),
-              fragmentTitles: encodeURIComponent(selectionTitles)
-            })
+            
+            const modalURL = "/index.html#" + generatePath("/content-fragment/:fragmentNames/:fragmentTitles/<%- button.id %>-modal", {
+                fragmentNames: encodeURIComponent(selectionNames),
+                fragmentTitles: encodeURIComponent(selectionTitles)
+              })
             console.log("Modal URL: ", modalURL)
-    
+            
             guestConnection.host.modal.showUrl({
-              title: 'Notify Slack',
+              title: "<%- button.label %>",
               url: modalURL
             })
+            <% }}) %>
           }
         },
         headerMenu: {
           getButton() {
             return {
-              id: 'configure-slack',
-              label: 'Configure Slack',
-              icon: 'OpenIn'
+              <% extensionManifest.headerMenuButtons.forEach((button) => { %>
+                  'id': '<%- button.id %>',
+                  'label': '<%- button.label %>',
+                  'icon': 'OpenIn'
+              <% }) %>
             }
           },
           onClick() {
-            const modalURL = "/index.html#/configure-slack-modal"
+            <% extensionManifest.headerMenuButtons.forEach((button) => { -%>
+              <% if (button.needsModal) { -%>
+            <% if (extensionManifest.headerMenuButtons.length > 1) { %>if (buttonId === '<%- button.id %>') {<% } %>
+            const modalURL = "/index.html#/<%- button.id %>-modal"
             console.log("Modal URL: ", modalURL)
-    
+            
             guestConnection.host.modal.showUrl({
-              title: 'Configure Slack',
+              title: "<%- button.label %>",
               url: modalURL
             })
+            <% }}) %>
           }
         }
       }

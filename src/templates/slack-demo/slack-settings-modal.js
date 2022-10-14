@@ -24,24 +24,27 @@ import {
   Button,
   Heading,
   View,
-  IllustratedMessage
+  IllustratedMessage,
+  StatusLight
 } from '@adobe/react-spectrum'
 
+import allActions from '../config.json'
+import actionWebInvoke from '../utils'
 import Spinner from "./Spinner"
+
 import { extensionId } from "./Constants"
 
 
 export default function <%- functionName %> () {
   // Fields
-  const [slackWebhook, setSlackWebhook] = useState('')
-  const [slackChannel, setSlackChannel] = useState('')
   const [status, setStatus] = useState('')
   const [message, setMessage] = useState('')
   const [guestConnection, setGuestConnection] = useState()
+  const [foundSlackWebhook, setFoundSlackWebhook] = useState(false)
+  const [foundSlackChannel, setFoundSlackChannel] = useState(false)
 
   // Action state
   const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
   const [isRequestComplete, setIsRequestComplete] = useState(false)
 
   useEffect (() => {
@@ -50,23 +53,32 @@ export default function <%- functionName %> () {
 
       setGuestConnection(connection)
 
-      try {
-      const webhook = localStorage.getItem('slackWebhook')
-      const channel = localStorage.getItem('slackChannel')
-      setSlackWebhook(webhook)
-      setSlackChannel(channel)
-    } catch (error) {
-      console.log(error)
-    }
+      const res = await actionWebInvoke(
+        allActions['get-slack-config'],
+        {},
+        {},
+        { 'method': 'GET' }
+      )
+ 
+      if (res.error) {
+        console.log(res.error.message)
+      } else {
+        if (res.slackWebhook !== '') {
+          setFoundSlackWebhook(true)
+        }
 
-    setIsLoading(false)
+        if (res.slackChannel !== '') {
+          setFoundSlackChannel(true)
+        }
+
+        setStatus("Set up Slack Configuration")
+        setMessage("Please open .env file in your App Builder project and specify your Slack Webhook URL and Channel.")
+      }
+ 
+      console.log(res)
+      setIsLoading(false)
     })()
   }, [])
-
-  const reset = () => {
-    setSlackWebhook('')
-    setSlackChannel('')
-  }
 
   const onCloseHandler = () => {
     guestConnection.host.modal.close()
@@ -78,24 +90,6 @@ export default function <%- functionName %> () {
     setIsRequestComplete(true)
   }
 
-  const onSaveHandler = async () => {
-  setIsSaving(true)
-
-  try {
-    localStorage.setItem('slackWebhook', slackWebhook)
-    localStorage.setItem('slackChannel', slackChannel)
-    setStatus("Success")
-    setMessage("Slack configuration was saved successfully.")
-  } catch (error) {
-    console.log(error)
-    setStatus("Failure")
-    setMessage(error)
-  }
-
-  setIsRequestComplete(true)
-  setIsSaving(false)
-  }
-
   return (
     <Provider theme={defaultTheme} colorScheme='light'>
       <Content width="100%">
@@ -103,23 +97,21 @@ export default function <%- functionName %> () {
           isLoading ? (
             <Spinner />
           ) : (
-            <Form isRequired isDisabled={isSaving}>
-              <TextField value={slackWebhook} onChange={setSlackWebhook} label="Slack Webhook URL"/>
-              <TextField value={slackChannel} onChange={setSlackChannel} label="Slack Channel"/>
+            <Form>
+             <StatusLight variant={foundSlackWebhook ? ('positive') : ('negative')}>{foundSlackWebhook ? ("Slack Webhook URL is set up") : ("Slack Webhook URL is not set up")}</StatusLight>
+             <StatusLight variant={foundSlackChannel ? ('positive') : ('negative')}>{foundSlackChannel ? ("Slack Channel is set up") : ("Slack Channel is not set up")}</StatusLight>
 
-              <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
-                {isSaving && <ProgressCircle size="S" aria-label="Saving..." isIndeterminate />}
-                <ButtonGroup align="end">
-                  <Button variant="primary" onClick={onCloseHandler}>Close</Button>
-                  <Button variant="secondary" onClick={onHelpHandler}>Help</Button>
-                  <Button variant="cta" onClick={onSaveHandler}>Save</Button>
-                </ButtonGroup>
-              </Flex>
-            </Form>
+             <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
+               <ButtonGroup marginStart="size-200">
+                 <Button variant="primary" onClick={onCloseHandler}>Close</Button>
+                 <Button variant="secondary" onClick={onHelpHandler}>Help</Button>
+               </ButtonGroup>
+             </Flex>
+           </Form>
           )
         }
-        <View height="size-300" />
-        {isRequestComplete && (
+        <View height="size-600" />
+        {(isRequestComplete || !foundSlackWebhook || !foundSlackChannel) && (
           <IllustratedMessage>
             <Heading>{status}</Heading>
             <Content>{message}</Content>
