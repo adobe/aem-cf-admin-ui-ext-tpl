@@ -20,11 +20,12 @@ import {
   Provider,
   Content,
   defaultTheme,
-  TextField,
+  TextArea,
   ButtonGroup,
   Button,
   Heading,
   View,
+  LabeledValue,
   IllustratedMessage
 } from '@adobe/react-spectrum'
 
@@ -40,19 +41,17 @@ export default function <%- functionName %> () {
   const [slackMessage, setSlackMessage] = useState('')
   const [status, setStatus] = useState('')
   const [message, setMessage] = useState('')
-  const [slackWebhook, setSlackWebhook] = useState('')
-  const [slackChannel, setSlackChannel] = useState('')
   const [guestConnection, setGuestConnection] = useState()
-  const { fragmentNames, fragmentTitles } = useParams()
+  const { fragments } = useParams()
 
   // Action state
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [isNotifying, setIsNotifying] = useState(false)
   const [isRequestComplete, setIsRequestComplete] = useState(false)
 
   
-  if (!(fragmentNames || fragmentTitles)) {
-    console.error("fragment parameters are missing")
+  if (!(fragments)) {
+    console.error("Fragments are missing!")
     return
   }
 
@@ -61,24 +60,7 @@ export default function <%- functionName %> () {
       const guestConnection = await attach({ id: extensionId })
 
       setGuestConnection(guestConnection)
-      setSlackMessage(fragmentNames)
-
-      const res = await actionWebInvoke(
-        allActions['get-slack-config'],
-        {},
-        {},
-        { 'method': 'GET' }
-      )
- 
-      if (res.error) {
-        console.log(res.error.message)
-      } else {
-        setSlackWebhook(res.slackWebhook)
-        setSlackChannel(res.slackChannel)
-      }
- 
-      console.log(res)
-      setIsLoading(false)
+      setSlackMessage(fragments)
     })()
   }, [])
 
@@ -97,9 +79,7 @@ export default function <%- functionName %> () {
       allActions['export-to-slack'],
       {},
       {
-        'slackWebhook': slackWebhook,
-        'slackChannel':  slackChannel,
-        'slackText': slackMessage + `\n\nSelected Fragment Title(s):\n${fragmentTitles}`
+        'slackText': slackMessage
       }
     )
 
@@ -123,16 +103,15 @@ export default function <%- functionName %> () {
           <Spinner />
         ) : (
           <Form>
-            <TextField value={slackMessage} onChange={setSlackMessage} label="Message"/>
+            <TextArea value={slackMessage} height="size-2000" isReadOnly/>
 
-            <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
+            <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
               {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
               <ButtonGroup marginStart="size-200">
                 <Button variant="primary" onClick={onCloseHandler}>Close</Button>
                 <Button variant="cta" onClick={onNotifySlackHandler}>Send</Button>
               </ButtonGroup>
             </Flex>
-            <View height="size-300" />
             {isRequestComplete && (
               <IllustratedMessage>
                 <Heading>{status}</Heading>

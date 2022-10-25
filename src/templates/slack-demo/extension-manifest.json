@@ -24,12 +24,22 @@
     },
     {
       "name": "get-slack-config"
+    },
+    {
+      "name": "get-slack-channels"
+    },
+    {
+      "name": "import-from-slack"
+    },
+    {
+      "name": "create-new-fragments"
     }
   ],
   "templateInputs": {
     "LOG_LEVEL": "debug",
     "SLACK_WEBHOOK": "$SLACK_WEBHOOK",
-    "SLACK_CHANNEL": "$SLACK_CHANNEL"
+    "SLACK_CHANNEL": "$SLACK_CHANNEL",
+    "SLACK_OAUTH_TOKEN": "$SLACK_OAUTH_TOKEN"
   },
-  "templateDotEnvVars": ["SLACK_WEBHOOK", "SLACK_CHANNEL"]
+  "templateDotEnvVars": ["SLACK_WEBHOOK", "SLACK_CHANNEL", "SLACK_OAUTH_TOKEN"]
 }

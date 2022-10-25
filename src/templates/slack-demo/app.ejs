@@ -41,7 +41,7 @@ function App(props) {
             <% extensionManifest.actionBarButtons.forEach((button) => { -%>
               <% if (button.needsModal) { %>
           <Route
-            exact path="content-fragment/:fragmentNames/:fragmentTitles/<%- button.id %>-modal"
+            exact path="content-fragment/:fragments/<%- button.id %>-modal"
             element={<<%- button.label.replace(/ /g, '') %>Modal />}
           />
           <% }})} -%>

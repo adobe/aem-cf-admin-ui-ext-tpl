@@ -11,7 +11,7 @@
  */
 
 /**
- * This is a sample action showcasing how to send a Slack notification
+ * This is a sample action showcasing how to retrieve a Slack message
  */
 
 
@@ -26,43 +26,47 @@ async function main (params) {
 
   try {
     // 'info' is the default level if not set
-    logger.info('Calling the main action of generic')
+    logger.info('Calling the main action of import-from-slack')
 
     // log parameters, only if params.LOG_LEVEL === 'debug'
     logger.debug(stringParameters(params))
 
     // check for missing request input parameters and headers
-    const requiredParams = ['slackText']
+    const requiredParams = ['SLACK_OAUTH_TOKEN', 'channelId']
     const errorMessage = checkMissingRequestInputs(params, requiredParams)
     if (errorMessage) {
       // return and log client errors
       return errorResponse(400, errorMessage, logger)
     }
 
+    const searchParams = new URLSearchParams()
+    searchParams.append('channel', params.channelId)
+    searchParams.append('limit', 1)
+
+    // replace this with the api you want to access
+    const apiEndpoint = `https://slack.com/api/conversations.history?${searchParams.toString()}`
+    logger.debug(apiEndpoint)
+
     // fetch content from external api endpoint
-    var payload = {
-      "channel": params.SLACK_CHANNEL,
-      "username": "incoming-webhook",
-      "text": params.slackText,
-      "mrkdwn": true
-    }
-  
-    // console.log(`${params.SLACK_WEBHOOK}`)
-    const res = await fetch(params.SLACK_WEBHOOK, {
-      method: 'POST',
+    const res = await fetch(apiEndpoint, {
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${params.SLACK_OAUTH_TOKEN}`
+      }
     })
     if (!res.ok) {
       return errorResponse(res.status, 'Something is wrong with your Slack configuration.', logger)
     }
 
+    const content = await res.json()
+    const jsonObj = JSON.parse(content['messages'][0]['text'])
+
     const response = {
       statusCode: 200,
       body: {
-        message: "Request Successful!"
+        message: "Request Successful!",
+        fragments: jsonObj['selectedContentFragments']
       }
     }
 

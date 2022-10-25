@@ -11,10 +11,11 @@
  */
 
 /**
- * This is a sample action showcasing how to retrieve your Slack parameters from .env file
+ * This is a sample action showcasing how to send a Slack notification
  */
 
 
+const fetch = require('node-fetch')
 const { Core } = require('@adobe/aio-sdk')
 const { errorResponse, stringParameters, checkMissingRequestInputs } = require('../utils')
 
@@ -23,26 +24,48 @@ async function main (params) {
   // create a Logger
   const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
 
-  // log parameters, only if params.LOG_LEVEL === 'debug'
-  logger.debug(stringParameters(params))
-
   try {
     // 'info' is the default level if not set
-    logger.info('Calling the main action of get-slack-config')
+    logger.info('Calling the main action of generic')
 
     // log parameters, only if params.LOG_LEVEL === 'debug'
     logger.debug(stringParameters(params))
 
-    return {
+    // check for missing request input parameters and headers
+    const requiredParams = ['SLACK_OAUTH_TOKEN']
+    const errorMessage = checkMissingRequestInputs(params, requiredParams)
+    if (errorMessage) {
+      // return and log client errors
+      return errorResponse(400, errorMessage, logger)
+    }
+
+    // replace this with the api you want to access
+    const apiEndpoint = "https://slack.com/api/conversations.list"
+
+    const res = await fetch(apiEndpoint, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${params.SLACK_OAUTH_TOKEN}`
+      }
+    })
+    if (!res.ok) {
+      return errorResponse(res.status, 'Something is wrong with your Slack configuration.', logger)
+    }
+
+    const content = await res.json()
+
+    const response = {
       statusCode: 200,
       body: {
         message: "Request Successful!",
-        slackWebhook: params.SLACK_WEBHOOK,
-        slackChannel: params.SLACK_CHANNEL,
-        slackOAuthToken: params.SLACK_OAUTH_TOKEN
+        slackChannels: content['channels'].map((channel) => ({'id': channel.id, 'name': channel.name}))
       }
     }
-  
+
+    // log the response status code
+    logger.info(`${response.statusCode}: successful request`)
+    return response
   } catch (error) {
     // log any server errors
     logger.error(error)

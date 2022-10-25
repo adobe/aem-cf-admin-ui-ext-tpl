@@ -25,9 +25,9 @@ function ExtensionRegistration() {
           getButton() {
             return {
               <% extensionManifest.actionBarButtons.forEach((button) => { %>
-                'id': '<%- button.id %>',
-                'label': '<%- button.label %>',
-                'icon': 'PublishCheck'
+              'id': '<%- button.id %>',
+              'label': '<%- button.label %>',
+              'icon': 'PublishCheck'
               <% }) %>
             }
           },
@@ -35,19 +35,13 @@ function ExtensionRegistration() {
           onClick(selections) {
             <% extensionManifest.actionBarButtons.forEach((button) => { -%>
               <% if (button.needsModal) { %>
-            var selectionNames = ""
-            var selectionTitles = ""
-    
-            selections.forEach((selection) => {
-              selectionNames = selectionNames.concat(selection.name, ' | ')
-              selectionTitles = selectionTitles.concat(selection.title, '\n')
-            })
-            console.log("Selection Names: ", selectionNames)
-            console.log("Selection Titles: ", selectionTitles)
             
-            const modalURL = "/index.html#" + generatePath("/content-fragment/:fragmentNames/:fragmentTitles/<%- button.id %>-modal", {
-                fragmentNames: encodeURIComponent(selectionNames),
-                fragmentTitles: encodeURIComponent(selectionTitles)
+            let selectedFrags = {
+              selectedContentFragments: selections.map((selection) => ({'id': selection.id, 'name': `copy-of-${selection.name}`, 'title': `${selection.title} (copy)`}))
+            }
+            
+            const modalURL = "/index.html#" + generatePath("/content-fragment/:fragments/<%- button.id %>-modal", {
+                fragments: encodeURIComponent(JSON.stringify(selectedFrags, null, 2))
               })
             console.log("Modal URL: ", modalURL)
             
@@ -62,9 +56,9 @@ function ExtensionRegistration() {
           getButton() {
             return {
               <% extensionManifest.headerMenuButtons.forEach((button) => { %>
-                  'id': '<%- button.id %>',
-                  'label': '<%- button.label %>',
-                  'icon': 'OpenIn'
+              'id': '<%- button.id %>',
+              'label': '<%- button.label %>',
+              'icon': 'OpenIn'
               <% }) %>
             }
           },
