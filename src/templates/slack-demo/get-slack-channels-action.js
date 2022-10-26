@@ -11,7 +11,7 @@
  */
 
 /**
- * This is a sample action showcasing how to send a Slack notification
+ * This is a sample action showcasing how to retrieve your Slack channels.
  */
 
 
@@ -26,14 +26,15 @@ async function main (params) {
 
   try {
     // 'info' is the default level if not set
-    logger.info('Calling the main action of generic')
+    logger.info('Calling the main action of get-slack-channels')
 
     // log parameters, only if params.LOG_LEVEL === 'debug'
     logger.debug(stringParameters(params))
 
     // check for missing request input parameters and headers
     const requiredParams = ['SLACK_OAUTH_TOKEN']
-    const errorMessage = checkMissingRequestInputs(params, requiredParams)
+    const requiredHeaders = []
+    const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
     if (errorMessage) {
       // return and log client errors
       return errorResponse(400, errorMessage, logger)
@@ -49,8 +50,9 @@ async function main (params) {
         'Authorization': `Bearer ${params.SLACK_OAUTH_TOKEN}`
       }
     })
+
     if (!res.ok) {
-      return errorResponse(res.status, 'Something is wrong with your Slack configuration.', logger)
+      return errorResponse(res.status, 'Something is wrong with your Slack OAuth token.', logger)
     }
 
     const content = await res.json()
@@ -58,8 +60,11 @@ async function main (params) {
     const response = {
       statusCode: 200,
       body: {
-        message: "Request Successful!",
-        slackChannels: content['channels'].map((channel) => ({'id': channel.id, 'name': channel.name}))
+        message: "Slack channels retrieved successfully.",
+        slackChannels: content['channels'].map((channel) => ({
+          'id': channel.id, 
+          'name': channel.name
+        }))
       }
     }
 
@@ -75,3 +80,4 @@ async function main (params) {
 }
 
 exports.main = main
+ 

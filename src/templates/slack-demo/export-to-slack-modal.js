@@ -84,14 +84,16 @@ export default function <%- functionName %> () {
     )
 
     if (res.error) {
+      console.log(res.error)
       setStatus("Request Failure")
       setMessage(res.error)
     } else {
+      console.log(res.message)
       setStatus("Request Success")
-      setMessage("The Slack notification was sent successfully.")
+      setMessage(res.message)
     }
-    setIsRequestComplete(true)
     console.log(res)
+    setIsRequestComplete(true)
     setIsNotifying(false)
   }
 
@@ -108,8 +110,8 @@ export default function <%- functionName %> () {
             <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
               {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
               <ButtonGroup marginStart="size-200">
-                <Button variant="primary" onClick={onCloseHandler}>Close</Button>
-                <Button variant="cta" onClick={onNotifySlackHandler}>Send</Button>
+                <Button variant="primary" onPress={onCloseHandler}>Close</Button>
+                <Button variant="cta" onPress={onNotifySlackHandler}>Send</Button>
               </ButtonGroup>
             </Flex>
             {isRequestComplete && (

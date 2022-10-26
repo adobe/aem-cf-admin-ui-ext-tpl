@@ -88,12 +88,12 @@ export default function <%- functionName %> () {
     )
 
     if (res.error) {
-      console.log(res.error.message)
+      console.log(res.error)
       setStatus("Request Failed")
-      setMessage("Content Fragments could not be imported.")
+      setMessage(res.error)
       setIsRequestComplete(true)
     } else {
-      console.log(res.fragments)
+      console.log(res.message)
       await createNewFragments(res)
     }
   }
@@ -128,9 +128,8 @@ export default function <%- functionName %> () {
                     >
                       {(item) => <Item>{item.name}</Item>}
                     </Picker>
-                    {/* <View height="size-200" /> */}
                     <TooltipTrigger>
-                      <Button variant="cta" onClick={onImportHandler}>Import</Button>
+                      <Button variant="cta" onPress={onImportHandler}>Import</Button>
                       <Tooltip>Imports a valid Content Fragment (most recent) from the selected Slack Channel.</Tooltip>
                     </TooltipTrigger>
                   </Flex>
@@ -140,8 +139,8 @@ export default function <%- functionName %> () {
               </TabPanels>
               <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
                 <ButtonGroup marginStart="size-200">
-                  <Button variant="primary" onClick={onCloseHandler}>Close</Button>
-                  <Button variant="secondary" onClick={onHelpHandler}>Help</Button>
+                  <Button variant="primary" onPress={onCloseHandler}>Close</Button>
+                  <Button variant="secondary" onPress={onHelpHandler}>Help</Button>
                 </ButtonGroup>
               </Flex>
             </Tabs>
@@ -168,9 +167,9 @@ export default function <%- functionName %> () {
     )
 
     if (res.error) {
-      console.log(res.error.message)
+      console.log(res.error)
       setStatus("Request Failed")
-      setMessage(res.error.message)
+      setMessage(res.error)
       setIsRequestComplete(true)
     } else {
       setStatus("Set up your .env file")
@@ -203,9 +202,9 @@ export default function <%- functionName %> () {
     )
 
     if (res.error) {
-      console.log(res.error.message)
+      console.log(res.error)
       setStatus("Request Failed")
-      setMessage(res.error.message)
+      setMessage(res.error)
     } else {
       setStatus("Request Success")
       setMessage(res.message)
@@ -222,9 +221,9 @@ export default function <%- functionName %> () {
     )
 
     if (res.error) {
-      console.log(res.error.message)
+      console.log(res.error)
       setStatus("Request Failed")
-      setMessage("Something is wrong with your OAuth token.")
+      setMessage(res.error)
       setIsRequestComplete(true)
     } else {
       setSlackChannels(res.slackChannels)

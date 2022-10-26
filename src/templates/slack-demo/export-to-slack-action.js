@@ -11,7 +11,7 @@
  */
 
 /**
- * This is a sample action showcasing how to send a Slack notification
+ * This is a sample action showcasing how to send JSON payload as a Slack message.
  */
 
 
@@ -26,28 +26,28 @@ async function main (params) {
 
   try {
     // 'info' is the default level if not set
-    logger.info('Calling the main action of generic')
+    logger.info('Calling the main action of export-to-slack')
 
     // log parameters, only if params.LOG_LEVEL === 'debug'
     logger.debug(stringParameters(params))
 
     // check for missing request input parameters and headers
     const requiredParams = ['slackText']
-    const errorMessage = checkMissingRequestInputs(params, requiredParams)
+    const requiredHeaders = []
+    const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
     if (errorMessage) {
       // return and log client errors
       return errorResponse(400, errorMessage, logger)
     }
 
-    // fetch content from external api endpoint
-    var payload = {
+    // post the message to external api endpoint
+    const payload = {
       "channel": params.SLACK_CHANNEL,
       "username": "incoming-webhook",
       "text": params.slackText,
       "mrkdwn": true
     }
   
-    // console.log(`${params.SLACK_WEBHOOK}`)
     const res = await fetch(params.SLACK_WEBHOOK, {
       method: 'POST',
       headers: {
@@ -56,13 +56,13 @@ async function main (params) {
       body: JSON.stringify(payload)
     })
     if (!res.ok) {
-      return errorResponse(res.status, 'Something is wrong with your Slack configuration.', logger)
+      return errorResponse(res.status, 'Something is wrong with your Slack webhook URL.', logger)
     }
 
     const response = {
       statusCode: 200,
       body: {
-        message: "Request Successful!"
+        message: "Selected Content Fragment(s) exported successfully."
       }
     }
 

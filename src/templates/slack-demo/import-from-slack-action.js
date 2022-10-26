@@ -11,7 +11,7 @@
  */
 
 /**
- * This is a sample action showcasing how to retrieve a Slack message
+ * This is a sample action showcasing how to retrieve the latest Slack message from a channel.
  */
 
 
@@ -33,7 +33,8 @@ async function main (params) {
 
     // check for missing request input parameters and headers
     const requiredParams = ['SLACK_OAUTH_TOKEN', 'channelId']
-    const errorMessage = checkMissingRequestInputs(params, requiredParams)
+    const requiredHeaders = []
+    const errorMessage = checkMissingRequestInputs(params, requiredParams, requiredHeaders)
     if (errorMessage) {
       // return and log client errors
       return errorResponse(400, errorMessage, logger)
@@ -56,17 +57,22 @@ async function main (params) {
       }
     })
     if (!res.ok) {
-      return errorResponse(res.status, 'Something is wrong with your Slack configuration.', logger)
+      return errorResponse(res.status, 'Something is wrong with your Slack OAuth token.', logger)
     }
 
-    const content = await res.json()
-    const jsonObj = JSON.parse(content['messages'][0]['text'])
+    try {
+      const content = await res.json()
+      const slackText = JSON.parse(content['messages'][0]['text'])
+      var fragmentsJSON = slackText['selectedContentFragments']
+    } catch (error) {
+      return errorResponse(res.status, 'Failed to parse Content Fragment(s) from the recent Slack message.', logger)
+    }
 
     const response = {
       statusCode: 200,
       body: {
-        message: "Request Successful!",
-        fragments: jsonObj['selectedContentFragments']
+        message: `Content Fragments parsed successfully.`,
+        fragments: fragmentsJSON
       }
     }
 

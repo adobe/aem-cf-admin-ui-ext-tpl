@@ -11,7 +11,7 @@
  */
 
 /**
- * This is a sample action showcasing how to retrieve your Slack parameters from .env file
+ * This is a sample action showcasing how to retrieve your Slack configuration from .env file as input parameters.
  */
 
 

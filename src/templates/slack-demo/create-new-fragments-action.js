@@ -3,7 +3,7 @@
 */
 
 /**
- * This is a sample action showcasing how to create new Content Fragments
+ * This is a sample action showcasing how to create new Content Fragments using AEM Assets API.
  */
 
 
@@ -33,12 +33,15 @@ async function main (params) {
     }
 
     // create new content fragments in CF Admin Console
-    await createNewFragments(params.aemHost, params.authConfig.imsToken, params.fragments, logger)
+    try {
+      await createNewFragments(params.aemHost, params.authConfig.imsToken, params.fragments, logger)
+    } catch (error) {
+      return errorResponse(500, error.message, logger)
+    }
 
     const response = {
       statusCode: 200,
       body: {
-        // message: "Request Successful!"
         message: `${params.fragments.length} Content Fragments imported successfully.`
       }
     }
@@ -55,16 +58,16 @@ async function main (params) {
 }
 
 async function createNewFragments(aemHost, imsToken, fragments, logger) {
-  fragments.forEach(async (fragment) => {
-    const cfParentPath = fragment.folderId.replace('/content/dam/', '')
-    const cfName = fragment.name
+  for (let i = 0; i < fragments.length; i++) {
+    const cfParentPath = fragments[i].folderId.replace('/content/dam/', '')
+    const cfName = fragments[i].name
     const apiEndpoint = `https://${aemHost}/api/assets/${cfParentPath}/${cfName}`
     logger.info(`Request to ${apiEndpoint}`)
 
-    var payload = {
+    const payload = {
       "properties": {
-        "cq:model": fragment.modelId,
-        "title": fragment.title
+        "cq:model": fragments[i].modelId,
+        "title": fragments[i].title
       }
     }
 
@@ -79,9 +82,9 @@ async function createNewFragments(aemHost, imsToken, fragments, logger) {
 
     if (!res.ok) {
       logger.error(res)
-      return errorResponse(res.status, 'Failed to import Content Fragment(s).', logger)
+      throw new Error("Failed to import Content Fragment(s).")
     }
-  })
+  }
 }
 
 exports.main = main

@@ -36,8 +36,14 @@ function ExtensionRegistration() {
             <% extensionManifest.actionBarButtons.forEach((button) => { -%>
               <% if (button.needsModal) { %>
             
-            let selectedFrags = {
-              selectedContentFragments: selections.map((selection) => ({'id': selection.id, 'name': `copy-of-${selection.name}`, 'title': `${selection.title} (copy)`}))
+            const selectedFrags = {
+              selectedContentFragments: selections.map((selection) => ({
+                'id': selection.id, 
+                'modelId': selection.model.id, 
+                'folderId': selection.folderId, 
+                'name': selection.name, 
+                'title': `${selection.title} (copy)`
+              }))
             }
             
             const modalURL = "/index.html#" + generatePath("/content-fragment/:fragments/<%- button.id %>-modal", {
