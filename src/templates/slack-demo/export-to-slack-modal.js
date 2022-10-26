@@ -15,20 +15,23 @@ import { useParams } from "react-router-dom"
 import { attach } from "@adobe/uix-guest"
 import {
   Flex,
+  Form,
   ProgressCircle,
   Provider,
   Content,
   defaultTheme,
-  TextField,
+  TextArea,
   ButtonGroup,
   Button,
   Heading,
-  View
+  View,
+  LabeledValue,
+  IllustratedMessage
 } from '@adobe/react-spectrum'
 
 import allActions from '../config.json'
 import actionWebInvoke from '../utils'
-import { IllustratedMessage } from '@adobe/react-spectrum'
+import Spinner from "./Spinner"
 
 import { extensionId } from "./Constants"
 
@@ -39,15 +42,16 @@ export default function <%- functionName %> () {
   const [status, setStatus] = useState('')
   const [message, setMessage] = useState('')
   const [guestConnection, setGuestConnection] = useState()
-  const { fragmentNames, fragmentTitles } = useParams()
+  const { fragments } = useParams()
 
   // Action state
+  const [isLoading, setIsLoading] = useState(false)
   const [isNotifying, setIsNotifying] = useState(false)
   const [isRequestComplete, setIsRequestComplete] = useState(false)
 
   
-  if (!(fragmentNames || fragmentTitles)) {
-    console.error("fragmentNames parameter is missing")
+  if (!(fragments)) {
+    console.error("Fragments are missing!")
     return
   }
 
@@ -56,7 +60,7 @@ export default function <%- functionName %> () {
       const guestConnection = await attach({ id: extensionId })
 
       setGuestConnection(guestConnection)
-      setSlackMessage(fragmentNames)
+      setSlackMessage(fragments)
     })()
   }, [])
 
@@ -72,46 +76,53 @@ export default function <%- functionName %> () {
     setIsNotifying(true)
 
     const res = await actionWebInvoke(
-      allActions['notify-slack'],
+      allActions['export-to-slack'],
       {},
       {
-        'slackWebhook': localStorage.getItem('slackWebhook'),
-        'slackChannel':  localStorage.getItem('slackChannel'),
-        'slackText': slackMessage + `\n\nSelected Fragment Title(s):\n${fragmentTitles}`
+        'slackText': slackMessage
       }
     )
 
     if (res.error) {
+      console.log(res.error)
       setStatus("Request Failure")
       setMessage(res.error)
     } else {
+      console.log(res.message)
       setStatus("Request Success")
-      setMessage("The Slack notification was sent successfully.")
+      setMessage(res.message)
     }
-    setIsRequestComplete(true)
     console.log(res)
+    setIsRequestComplete(true)
     setIsNotifying(false)
   }
 
   return (
     <Provider theme={defaultTheme} colorScheme='light'>
       <Content width="100%">
-        <TextField value={slackMessage} onChange={setSlackMessage} label="Message" width="100%"/>
+      {
+        isLoading ? (
+          <Spinner />
+        ) : (
+          <Form>
+            <TextArea value={slackMessage} height="size-2000" isReadOnly/>
 
-        <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-400">
-          {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
-          <ButtonGroup align="end">
-            <Button variant="primary" onClick={onCloseHandler}>Close</Button>
-            <Button variant="cta" onClick={onNotifySlackHandler}>Send</Button>
-          </ButtonGroup>
-        </Flex>
-        <View height="size-300" />
-        {isRequestComplete && (
-          <IllustratedMessage>
-            <Heading>{status}</Heading>
-            <Content>{message}</Content>
-          </IllustratedMessage>
-        )}
+            <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
+              {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
+              <ButtonGroup marginStart="size-200">
+                <Button variant="primary" onPress={onCloseHandler}>Close</Button>
+                <Button variant="cta" onPress={onNotifySlackHandler}>Send</Button>
+              </ButtonGroup>
+            </Flex>
+            {isRequestComplete && (
+              <IllustratedMessage>
+                <Heading>{status}</Heading>
+                <Content>{message}</Content>
+              </IllustratedMessage>
+            )}
+          </Form>
+        )
+      }
       </Content>
     </Provider>
   )

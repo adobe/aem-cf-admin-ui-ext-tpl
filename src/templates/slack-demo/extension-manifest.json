@@ -1,26 +1,45 @@
 {
-  "name": "Slack UI Extension Demo",
-  "id": "slack-ui-extension-demo",
-  "description": "Demo Extension to showcase custom buttons within AEM Content Fragment Console",
-  "version": "0.0.1",
+  "name": "Slack Import/Export Extension Demo",
+  "id": "slack-import-export-extension-demo",
+  "description": "Demo Extension to showcase import/export functionality using custom buttons within AEM Content Fragment Console",
+  "version": "1.0.0",
   "templateFolder": "slack-demo",
   "actionBarButtons": [
     {
-      "label": "Notify Slack",
+      "label": "Export to Slack",
       "needsModal": true,
-      "id": "notify-slack"
+      "id": "export-to-slack"
     }
   ],
   "headerMenuButtons": [
     {
-      "label": "Configure Slack",
+      "label": "Slack Settings",
       "needsModal": true,
-      "id": "configure-slack"
+      "id": "slack-settings"
     }
   ],
   "runtimeActions": [
     {
-      "name": "notify-slack"
+      "name": "export-to-slack"
+    },
+    {
+      "name": "get-slack-config"
+    },
+    {
+      "name": "get-slack-channels"
+    },
+    {
+      "name": "import-from-slack"
+    },
+    {
+      "name": "create-new-fragments"
     }
-  ]
+  ],
+  "templateInputs": {
+    "LOG_LEVEL": "debug",
+    "SLACK_WEBHOOK": "$SLACK_WEBHOOK",
+    "SLACK_CHANNEL": "$SLACK_CHANNEL",
+    "SLACK_OAUTH_TOKEN": "$SLACK_OAUTH_TOKEN"
+  },
+  "templateDotEnvVars": ["SLACK_WEBHOOK", "SLACK_CHANNEL", "SLACK_OAUTH_TOKEN"]
 }

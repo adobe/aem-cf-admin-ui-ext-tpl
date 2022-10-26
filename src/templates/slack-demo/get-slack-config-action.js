@@ -11,13 +11,11 @@
  */
 
 /**
- * This is a sample action showcasing how to send a Slack notification
+ * This is a sample action showcasing how to retrieve your Slack configuration from .env file as input parameters.
  */
 
 
-const fetch = require('node-fetch')
 const { Core } = require('@adobe/aio-sdk')
-const stateLib = require('@adobe/aio-lib-state')
 const { errorResponse, stringParameters, checkMissingRequestInputs } = require('../utils')
 
 // main function that will be executed by Adobe I/O Runtime
@@ -25,51 +23,26 @@ async function main (params) {
   // create a Logger
   const logger = Core.Logger('main', { level: params.LOG_LEVEL || 'info' })
 
+  // log parameters, only if params.LOG_LEVEL === 'debug'
+  logger.debug(stringParameters(params))
+
   try {
     // 'info' is the default level if not set
-    logger.info('Calling the main action of generic')
+    logger.info('Calling the main action of get-slack-config')
 
     // log parameters, only if params.LOG_LEVEL === 'debug'
     logger.debug(stringParameters(params))
 
-    // check for missing request input parameters and headers
-    const requiredParams = ['slackWebhook', 'slackChannel', 'slackText']
-    const errorMessage = checkMissingRequestInputs(params, requiredParams)
-    if (errorMessage) {
-      // return and log client errors
-      return errorResponse(400, errorMessage, logger)
-    }
-
-    // fetch content from external api endpoint
-    var payload = {
-      "channel": params.slackChannel,
-      "username": "incoming-webhook",
-      "text": params.slackText,
-      "mrkdwn": true
-    }
-  
-    // console.log(`${params.SLACK_WEBHOOK}`)
-    const res = await fetch(params.slackWebhook, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    })
-    if (!res.ok) {
-      return errorResponse(res.status, 'Something is wrong with your Slack configuration.', logger)
-    }
-
-    const response = {
+    return {
       statusCode: 200,
       body: {
-        message: "Request Successful!"
+        message: "Request Successful!",
+        slackWebhook: params.SLACK_WEBHOOK,
+        slackChannel: params.SLACK_CHANNEL,
+        slackOAuthToken: params.SLACK_OAUTH_TOKEN
       }
     }
-
-    // log the response status code
-    logger.info(`${response.statusCode}: successful request`)
-    return response
+  
   } catch (error) {
     // log any server errors
     logger.error(error)
