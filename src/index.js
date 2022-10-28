@@ -45,7 +45,7 @@ class MainGenerator extends Generator {
   
   initializing () {
     // all paths are relative to root
-    this.extFolder = 'src/aem/cf-console-admin-1'
+    this.extFolder = 'src/aem-cf-console-admin-1'
     this.actionFolder = path.join(this.extFolder, 'actions')
     
     this.webSrcFolder = path.join(this.extFolder, 'web-src')
