@@ -29,8 +29,7 @@ const briefOverviews = {
 }
 
 const promptDocs = {
-  mainDoc: "https://git.corp.adobe.com/pages/dx-devex-acceleration/uix-docs/overview/",
-  sampleProject: "https://www.example.com/project"
+  mainDoc: "https://developer.adobe.com/uix/docs/"
 }
 
 // Top Level prompts
@@ -296,10 +295,6 @@ const promptGuideMenu = (manifest) => {
 // Helper prompts for Guide Menu
 const helpPrompts = () => {
   console.log(chalk.blue(chalk.bold(`Please refer to:\n  -> ${promptDocs['mainDoc']}`)) + '\n')
-}
-
-const sampleProjectPrompts = () => {
-  console.log(chalk.blue(chalk.bold(`Please git clone this repository:\n  -> ${promptDocs['sampleProject']}`)) + '\n')
 }
 
 const dummyPrompt = () => {
