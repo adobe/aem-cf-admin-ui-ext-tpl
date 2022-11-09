@@ -27,9 +27,11 @@ describe('prototype', () => {
 })
 
 describe('run', () => {
+  const srcFolder = 'src/aem-cf-console-admin-1'
+  const configName = 'aem/cf-console-admin/1'
+  const extConfig = 'ext.config.yaml'
   
   test('test a generator invocation with default code generation', async () => {
-    const templateFolder = 'src/aem-cf-console-admin-1'
     const options = {
       'is-test': true,
       'extension-manifest': defaultExtensionManifest
@@ -47,14 +49,13 @@ describe('run', () => {
     )
     expect(writeKeyAppConfig).toHaveBeenCalledTimes(1)
     expect(writeKeyYAMLConfig).toHaveBeenCalledTimes(3)
-    expect(writeKeyAppConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), 'extensions.aem/cf-console-admin/1', { $include: `${templateFolder}/ext.config.yaml` })
-    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${templateFolder}/ext.config.yaml`), 'operations', { view: [{ impl: 'index.html', type: 'web' }] })
-    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${templateFolder}/ext.config.yaml`), 'actions', 'actions')
-    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${templateFolder}/ext.config.yaml`), 'web', 'web-src')
+    expect(writeKeyAppConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), `extensions.${configName}`, { $include: `${srcFolder}/${extConfig}` })
+    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${srcFolder}/${extConfig}`), 'operations', { view: [{ impl: 'index.html', type: 'web' }] })
+    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${srcFolder}/${extConfig}`), 'actions', 'actions')
+    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${srcFolder}/${extConfig}`), 'web', 'web-src')
   })
 
   test('test a generator invocation with custom code generation', async () => {
-    const templateFolder = 'src/aem-cf-console-admin-1'
     const options = {
       'is-test': true,
       'extension-manifest': customExtensionManifest
@@ -86,9 +87,9 @@ describe('run', () => {
     )
     expect(writeKeyAppConfig).toHaveBeenCalledTimes(1)
     expect(writeKeyYAMLConfig).toHaveBeenCalledTimes(3)
-    expect(writeKeyAppConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), 'extensions.aem/cf-console-admin/1', { $include: `${templateFolder}/ext.config.yaml` })
-    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${templateFolder}/ext.config.yaml`), 'operations', { view: [{ impl: 'index.html', type: 'web' }] })
-    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${templateFolder}/ext.config.yaml`), 'actions', 'actions')
-    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${templateFolder}/ext.config.yaml`), 'web', 'web-src')
+    expect(writeKeyAppConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), `extensions.${configName}`, { $include: `${srcFolder}/${extConfig}` })
+    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${srcFolder}/${extConfig}`), 'operations', { view: [{ impl: 'index.html', type: 'web' }] })
+    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${srcFolder}/${extConfig}`), 'actions', 'actions')
+    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${srcFolder}/${extConfig}`), 'web', 'web-src')
   })
 })
