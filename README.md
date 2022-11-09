@@ -20,7 +20,7 @@ Extensibility Template for AEM Content Fragment Console
 - Project in Adobe developer console
 
 # Installation
-- `npm install -g @adobe/aio-cli-next` (Pre-released functionalities for AIO CLI)
+- `npm install -g @adobe/aio-cli`
 
 # Usage
 - `aio app init <your-folder-name>`
