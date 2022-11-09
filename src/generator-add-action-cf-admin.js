@@ -13,7 +13,7 @@ const path = require('path')
 const { constants, ActionGenerator, commonTemplates } = require('@adobe/generator-app-common-lib')
 // const { commonDependencyVersions } = constants
 
-class CFAdminUIActionGenerator extends ActionGenerator {
+class CFAdminActionGenerator extends ActionGenerator {
   constructor (args, opts) {
     super(args, opts)
     this.props = {
@@ -87,4 +87,4 @@ const { Core } = require('@adobe/aio-sdk')`,
   }
 }
 
-module.exports = CFAdminUIActionGenerator
+module.exports = CFAdminActionGenerator

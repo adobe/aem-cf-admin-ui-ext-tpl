@@ -2,11 +2,11 @@ module.exports = {
   testEnvironment: 'node',
   verbose: true,
   setupFilesAfterEnv: ['./test/jest.setup.js'],
-  collectCoverage: false,
-  collectCoverageFrom: [
-    'src/**/*.js'
-  ],
+  collectCoverage: true,
+  collectCoverageFrom: [],
   testPathIgnorePatterns: [
+    "<rootDir>/node_modules/",
+    "<rootDir>/src/templates/"
   ],
   coverageThreshold: {
     global: {

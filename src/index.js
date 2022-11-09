@@ -14,8 +14,8 @@ const path = require('path')
 const upath = require('upath')
 const fs = require('fs-extra')
 
-const runtimeAction = require('./generator-add-action-cf-admin-ui')
-const webAssets = require('./generator-add-web-assets-cf-admin-ui')
+const CFAdminActionGenerator = require('./generator-add-action-cf-admin')
+const CFAdminWebAssetsGenerator = require('./generator-add-web-assets-cf-admin')
 
 const {constants, utils} = require('@adobe/generator-app-common-lib')
 const { runtimeManifestKey } = constants
@@ -41,30 +41,36 @@ class MainGenerator extends Generator {
     
     // options are inputs from CLI or yeoman parent generator
     this.option('skip-prompt', { default: false })
+    this.option('is-test', { default: false })
   }
   
   initializing () {
     // all paths are relative to root
     this.extFolder = 'src/aem-cf-console-admin-1'
     this.actionFolder = path.join(this.extFolder, 'actions')
-    
     this.webSrcFolder = path.join(this.extFolder, 'web-src')
     this.extConfigPath = path.join(this.extFolder, 'ext.config.yaml')
     this.configName = 'aem/cf-console-admin/1'
 
-    this.extensionManifest = readManifest(EXTENSION_MANIFEST_PATH)
+    if (!this.option('is-test')) {
+      this.extensionManifest = readManifest(EXTENSION_MANIFEST_PATH)
+    } else {
+      this.extensionManifest = this.options['extension-manifest']
+    }
   }
 
   async prompting () {
-    this.log(briefOverviews['templateInfo'])
-    await promptTopLevelFields(this.extensionManifest)
-      .then(() => promptMainMenu(this.extensionManifest))
-      .then(() => writeManifest(this.extensionManifest, EXTENSION_MANIFEST_PATH))
-      .then(() => {
-        this.log("\nExtension Manifest for Code Pre-generation")
-        this.log("------------------------------------------")
-        this.log(JSON.stringify(this.extensionManifest, null, '  '))
-      })
+    if (!this.option('is-test')) {
+      this.log(briefOverviews['templateInfo'])
+      await promptTopLevelFields(this.extensionManifest)
+        .then(() => promptMainMenu(this.extensionManifest))
+        .then(() => writeManifest(this.extensionManifest, EXTENSION_MANIFEST_PATH))
+        .then(() => {
+          this.log("\nExtension Manifest for Code Pre-generation")
+          this.log("------------------------------------------")
+          this.log(JSON.stringify(this.extensionManifest, null, '  '))
+        })
+    }
   }
 
   async writing () {
@@ -72,12 +78,11 @@ class MainGenerator extends Generator {
     if (this.extensionManifest.runtimeActions) {
       this.extensionManifest.runtimeActions.forEach((action) => {
         this.composeWith({
-          Generator: runtimeAction,
+          Generator: CFAdminActionGenerator,
           path: 'unknown'
         },
         {
           // forward needed args
-          'skip-prompt': true, // do not ask for action name
           'action-folder': this.actionFolder,
           'config-path': this.extConfigPath,
           'full-key-to-manifest': runtimeManifestKey,
@@ -89,7 +94,7 @@ class MainGenerator extends Generator {
 
     // generate the UI
     this.composeWith({
-      Generator: webAssets,
+      Generator: CFAdminWebAssetsGenerator,
       path: 'unknown'
     }, 
     {

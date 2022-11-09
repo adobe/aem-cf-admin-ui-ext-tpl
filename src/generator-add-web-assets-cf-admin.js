@@ -15,7 +15,7 @@ const Generator = require('yeoman-generator')
 const { utils, constants } = require('@adobe/generator-app-common-lib')
 const { commonDependencyVersions } = constants
 
-class CFAdminUIGenerator extends Generator {
+class CFAdminWebAssetsGenerator extends Generator {
   constructor (args, opts) {
     super(args, opts)
     // required
@@ -64,7 +64,7 @@ class CFAdminUIGenerator extends Generator {
       '@adobe/aio-sdk': commonDependencyVersions['@adobe/aio-sdk'],
       '@adobe/exc-app': '^0.2.21',
       '@adobe/react-spectrum': '^3.4.0',
-      '@adobe/uix-guest': '^0.5.3',
+      '@adobe/uix-guest': '^0.6.3',
       '@react-spectrum/list': '^3.0.0-rc.0',
       '@spectrum-icons/workflow': '^3.2.0',
       'core-js': '^3.6.4',
@@ -153,4 +153,4 @@ class CFAdminUIGenerator extends Generator {
   }
 }
 
-module.exports = CFAdminUIGenerator
+module.exports = CFAdminWebAssetsGenerator
