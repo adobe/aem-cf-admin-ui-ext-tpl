@@ -70,7 +70,6 @@ function assertManifestContent (actionName) {
   const json = yaml.load(fs.readFileSync(basicGeneratorOptions['config-path']).toString())
   expect(json.runtimeManifest.packages).toBeDefined() // basicGeneratorOptions['full-key-to-manifest']
   const packages = json.runtimeManifest.packages
-  // a random package name is generated, we need to figure it out
   const packageName = Object.keys(packages)[0]
   expect(json.runtimeManifest.packages[packageName].actions[actionName]).toEqual({
     function: `actions/${actionName}/index.js`,
@@ -85,19 +84,6 @@ function assertManifestContent (actionName) {
       'require-adobe-auth': false
     }
   })
-}
-
-/**
- * Checks that package.json has all needed dependencies specified.
- *
- * @param {object} dependencies An object representing expected package.json dependencies.
- * @param {object} devDependencies An object representing expected package.json dev dependencies.
- */
-function assertDependencies (dependencies, devDependencies) {
-  expect(JSON.parse(fs.readFileSync('package.json').toString())).toEqual(expect.objectContaining({
-    dependencies,
-    devDependencies
-  }))
 }
 
 /**
@@ -141,7 +127,11 @@ describe('run', () => {
     assertGeneratedFiles(actionName)
     assertManifestContent(actionName)
     assertActionCodeContent(actionName)
-    assertDependencies({ 'node-fetch': expect.any(String) }, { '@openwhisk/wskdebug': expect.any(String) })
+    assertDependencies(
+      fs,
+      { 'node-fetch': expect.any(String) }, 
+      { '@openwhisk/wskdebug': expect.any(String) }
+    )
     assertEnvContent()
   })
 
@@ -158,9 +148,10 @@ describe('run', () => {
       })
 
     assertGeneratedFiles(actionName)
-    // assertManifestContent(actionName)
-    // assertActionCodeContent(actionName)
-    assertDependencies({ 'node-fetch': expect.any(String) }, { '@openwhisk/wskdebug': expect.any(String) })
-    // assertEnvContent()
+    assertDependencies(
+      fs,
+      { 'node-fetch': expect.any(String) }, 
+      { '@openwhisk/wskdebug': expect.any(String) }
+    )
   })
 })

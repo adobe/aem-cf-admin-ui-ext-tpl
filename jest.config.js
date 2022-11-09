@@ -5,8 +5,7 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: [],
   testPathIgnorePatterns: [
-    "<rootDir>/node_modules/",
-    "<rootDir>/src/templates/"
+    "<rootDir>/node_modules/"
   ],
   coverageThreshold: {
     global: {

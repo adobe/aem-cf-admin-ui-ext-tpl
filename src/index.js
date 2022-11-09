@@ -13,13 +13,14 @@ const Generator = require('yeoman-generator')
 const path = require('path')
 const upath = require('upath')
 const fs = require('fs-extra')
+const chalk = require('chalk')
 
 const CFAdminActionGenerator = require('./generator-add-action-cf-admin')
 const CFAdminWebAssetsGenerator = require('./generator-add-web-assets-cf-admin')
 
 const {constants, utils} = require('@adobe/generator-app-common-lib')
 const { runtimeManifestKey } = constants
-const { briefOverviews, promptTopLevelFields, promptMainMenu } = require('./prompts')
+const { briefOverviews, promptTopLevelFields, promptMainMenu, promptDocs } = require('./prompts')
 const { readManifest, writeManifest } = require('./utils')
 
 const EXTENSION_MANIFEST_PATH = path.join(process.cwd(), 'extension-manifest.json')
@@ -52,7 +53,7 @@ class MainGenerator extends Generator {
     this.extConfigPath = path.join(this.extFolder, 'ext.config.yaml')
     this.configName = 'aem/cf-console-admin/1'
 
-    if (!this.option('is-test')) {
+    if (!this.options['is-test']) {
       this.extensionManifest = readManifest(EXTENSION_MANIFEST_PATH)
     } else {
       this.extensionManifest = this.options['extension-manifest']
@@ -60,7 +61,7 @@ class MainGenerator extends Generator {
   }
 
   async prompting () {
-    if (!this.option('is-test')) {
+    if (!this.options['is-test']) {
       this.log(briefOverviews['templateInfo'])
       await promptTopLevelFields(this.extensionManifest)
         .then(() => promptMainMenu(this.extensionManifest))
@@ -144,10 +145,15 @@ class MainGenerator extends Generator {
   }
 
   async end () {
-    this.log('\nSample code files have been generated.\n')
-    this.log('Next steps:')
-    this.log('1) Populate your local environment variables in the ".env" file')
-    this.log('2) You can use `aio app run` or `aio app deploy` to see the sample code files in action')
+    this.log(chalk.bold('\nSample code files have been generated.\n'))
+    this.log(chalk.bold('Next Steps:'))
+    this.log(chalk.bold('-----------'))
+    this.log(chalk.bold('1) Populate your local environment variables in the ".env" file'))
+    this.log(chalk.bold('2) You can use `aio app run` or `aio app deploy` to see the sample code files in action'))
+    if (this.extensionManifest.templateFolder) {
+      this.log(chalk.bold('3) Please refer to the link below for configuring the demo application:'))
+      this.log(chalk.blue(chalk.bold(`   -> ${promptDocs['configureSlackDoc']}`)))
+    }
     this.log('\n')
   }
 }

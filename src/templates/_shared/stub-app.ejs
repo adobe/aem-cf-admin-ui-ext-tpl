@@ -12,9 +12,9 @@ import ExtensionRegistration from "./ExtensionRegistration"
 <% const actionBarButtons = extensionManifest.actionBarButtons || [] -%>
 <% const headerMenuButtons = extensionManifest.headerMenuButtons || [] -%>
 <% const allCustomButtons = actionBarButtons.concat(headerMenuButtons) -%>
-  <% allCustomButtons.forEach((button) => { -%>
-    <% if (button.needsModal) { -%>
-      <% const modalFileName = button.label.replace(/ /g, '') + 'Modal' %>
+<% allCustomButtons.forEach((button) => { -%>
+  <% if (button.needsModal) { -%>
+    <% const modalFileName = button.label.replace(/ /g, '') + 'Modal' %>
 import <%- modalFileName %> from "./<%- modalFileName %>"
 <% }}) -%>
 

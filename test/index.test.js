@@ -45,6 +45,12 @@ describe('run', () => {
       }),
       expect.any(Object)
     )
+    expect(writeKeyAppConfig).toHaveBeenCalledTimes(1)
+    expect(writeKeyYAMLConfig).toHaveBeenCalledTimes(3)
+    expect(writeKeyAppConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), 'extensions.aem/cf-console-admin/1', { $include: `${templateFolder}/ext.config.yaml` })
+    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${templateFolder}/ext.config.yaml`), 'operations', { view: [{ impl: 'index.html', type: 'web' }] })
+    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${templateFolder}/ext.config.yaml`), 'actions', 'actions')
+    expect(writeKeyYAMLConfig).toHaveBeenCalledWith(expect.any(CFAdminMainGenerator), global.n(`${templateFolder}/ext.config.yaml`), 'web', 'web-src')
   })
 
   test('test a generator invocation with custom code generation', async () => {

@@ -24,12 +24,11 @@ const { customExtensionManifest, demoExtensionManifest } = require('./test-manif
 
 const extFolder = 'src/aem-cf-console-admin-1'
 const extConfigPath = path.join(extFolder, 'ext.config.yaml')
-const webSrcFolder = path.join(extFolder, '${webSrcFolder}')
+const webSrcFolder = path.join(extFolder, 'web-src')
 
 const basicGeneratorOptions = {
   'web-src-folder': webSrcFolder,
-  'config-path': extConfigPath,
-  'extension-manifest': customExtensionManifest
+  'config-path': extConfigPath
 }
 
 describe('prototype', () => {
@@ -42,7 +41,8 @@ function assertEnvContent (prevContent) {
   assert.fileContent('.env', prevContent)
 }
 
-function assertFiles () {
+function assertFiles (extensionManifest) {
+  // Asert generated web assets files
   assert.file(`${webSrcFolder}/index.html`)
   assert.file(`${webSrcFolder}/src/exc-runtime.js`)
   assert.file(`${webSrcFolder}/src/index.css`)
@@ -52,27 +52,26 @@ function assertFiles () {
   assert.file(`${webSrcFolder}/src/components/Spinner.js`)
   assert.file(`${webSrcFolder}/src/components/App.js`)
   assert.file(`${webSrcFolder}/src/components/ExtensionRegistration.js`)
-}
 
-function assertWithActions () {
-  
-}
+  // Assert generated modal files
+  const actionBarButtons = extensionManifest.actionBarButtons || []
+  const headerMenuButtons = extensionManifest.headerMenuButtons || []
+  const allCustomButtons = actionBarButtons.concat(headerMenuButtons)
 
-function assertWithNoActions () {
-
-}
-
-function assertWithDoc () {
-  
+  allCustomButtons.forEach((button) => {
+    if (button.needsModal) {
+      const modalFileName = button.label.replace(/ /g, '') + 'Modal'
+      assert.file(`${webSrcFolder}/src/components/${modalFileName}.js`)
+    }
+  })
 }
 
 const prevDotEnv = 'FAKECONTENT'
 
 describe('run', () => {
   test('test a generator invocation with custom code generation', async () => {
-    // const options = cloneDeep(global.basicGeneratorOptions)
-    // options['web-src-folder'] = path.join(this.extFolder, '${webSrcFolder}')
     const options = cloneDeep(basicGeneratorOptions)
+    options['extension-manifest'] = customExtensionManifest
     await helpers
       .run(CFAdminWebAssetsGenerator)
       .withOptions(options)
@@ -80,7 +79,7 @@ describe('run', () => {
         fs.writeFileSync(path.join(dir, '.env'), prevDotEnv)
       })
 
-    assertFiles()
+    assertFiles(customExtensionManifest)
     assertDependencies(
       fs,
       {
@@ -110,20 +109,11 @@ describe('run', () => {
     )
     assertEnvContent(prevDotEnv)
 
-    // greats with projectName
-    // TODO fix check failing content mismatch, possible bug
-    // assert.fileContent('${webSrcFolder}/src/components/Home.js', 'Welcome to abc!')
-
     // make sure html calls js files
     assert.fileContent(`${webSrcFolder}/index.html`, '<script src="./src/index.js"')
-
-    assertWithActions()
-    assertWithDoc()
   })
 
   test('test a generator invocation with demo code generation', async () => {
-    // const options = cloneDeep(global.basicGeneratorOptions)
-    // options['web-src-folder'] = '${webSrcFolder}'
     const options = cloneDeep(basicGeneratorOptions)
     options['extension-manifest'] = demoExtensionManifest
     await helpers
@@ -133,7 +123,7 @@ describe('run', () => {
         fs.writeFileSync(path.join(dir, '.env'), prevDotEnv)
       })
 
-    assertFiles()
+    assertFiles(demoExtensionManifest)
     assertDependencies(
       fs,
       {
@@ -163,14 +153,7 @@ describe('run', () => {
     )
     assertEnvContent(prevDotEnv)
 
-    // greats with projectName
-    // TODO fix check failing content mismatch, possible bug
-    // assert.fileContent('${webSrcFolder}/src/components/Home.js', 'Welcome to abc!')
-
     // make sure html calls js files
     assert.fileContent(`${webSrcFolder}/index.html`, '<script src="./src/index.js"')
-
-    assertWithNoActions()
-    assertWithDoc()
   })
 })
