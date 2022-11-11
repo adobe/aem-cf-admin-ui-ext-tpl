@@ -89,6 +89,42 @@ function assertFiles (extensionManifest) {
     `${webSrcFolder}/index.html`,
     '<script src="./src/index.js"'
   )
+
+  const actionBarButtons = extensionManifest.actionBarButtons || []
+  const headerMenuButtons = extensionManifest.headerMenuButtons || []
+  const allCustomButtons = actionBarButtons.concat(headerMenuButtons)
+
+  allCustomButtons.forEach((button) => {
+    if (button.needsModal) {
+      const modalFileName = button.label.replace(/ /g, '') + 'Modal'
+      
+      assert.fileContent(
+        `${webSrcFolder}/src/components/App.js`,
+        `import ${modalFileName} from "./${modalFileName}"`
+      )
+      assert.fileContent(
+        `${webSrcFolder}/src/components/App.js`,
+        `element={<${button.label.replace(/ /g, '')}Modal />}`
+      )
+      assert.fileContent(
+        `${webSrcFolder}/src/components/${modalFileName}.js`,
+        `export default function ${modalFileName} ()`
+      )
+    }
+  })
+
+  headerMenuButtons.forEach((button) => {
+    if (button.needsModal) {
+      assert.fileContent(
+        `${webSrcFolder}/src/components/App.js`,
+        `exact path="${button.id}-modal"`
+      )
+      assert.fileContent(
+        `${webSrcFolder}/src/components/ExtensionRegistration.js`,
+        `const modalURL = "/index.html#/${button.id}-modal"`
+      )
+    }
+  })
 }
 
 describe('run', () => {
