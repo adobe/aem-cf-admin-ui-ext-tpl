@@ -37,10 +37,18 @@ describe('prototype', () => {
   })
 })
 
+/**
+ * Checks that .env has the required environment variables.
+ */
 function assertEnvContent (prevContent) {
   assert.fileContent('.env', prevContent)
 }
 
+/**
+ * Checks that all the files are generated.
+ *
+ * @param {string} extensionManifest an extension manifest
+ */
 function assertFiles (extensionManifest) {
   // Asert generated web assets files
   assert.file(`${webSrcFolder}/index.html`)
@@ -66,9 +74,26 @@ function assertFiles (extensionManifest) {
   })
 }
 
-const prevDotEnv = 'FAKECONTENT'
+/**
+ * Checks that files contains the correct code snippets.
+ *
+ * @param {string} extensionManifest an extension manifest
+ */
+ function assertCodeContent (extensionManifest) {
+  assert.fileContent(
+    `${webSrcFolder}/src/components/Constants.js`,
+    `extensionId: '${extensionManifest.id}'`
+  )
+  
+  assert.fileContent(
+    `${webSrcFolder}/index.html`,
+    '<script src="./src/index.js"'
+  )
+}
 
 describe('run', () => {
+  const prevDotEnv = 'FAKECONTENT'
+  
   test('test a generator invocation with custom code generation', async () => {
     const options = cloneDeep(basicGeneratorOptions)
     options['extension-manifest'] = customExtensionManifest
@@ -108,9 +133,7 @@ describe('run', () => {
       }
     )
     assertEnvContent(prevDotEnv)
-
-    // make sure html calls js files
-    assert.fileContent(`${webSrcFolder}/index.html`, '<script src="./src/index.js"')
+    assertCodeContent(customExtensionManifest)
   })
 
   test('test a generator invocation with demo code generation', async () => {
@@ -152,8 +175,6 @@ describe('run', () => {
       }
     )
     assertEnvContent(prevDotEnv)
-
-    // make sure html calls js files
-    assert.fileContent(`${webSrcFolder}/index.html`, '<script src="./src/index.js"')
+    assertCodeContent(demoExtensionManifest)
   })
 })

@@ -45,7 +45,7 @@ describe('prototype', () => {
 })
 
 /**
- * Checks that all files have been generated.
+ * Checks that all the files are generated.
  *
  * @param {string} actionName an action name
  */
@@ -87,7 +87,7 @@ function assertManifestContent (actionName) {
 }
 
 /**
- * Checks that .env has the API_ENDPOINT environment variable.
+ * Checks that .env has the required environment variables.
  */
 function assertEnvContent () {
   const theFile = '.env'
