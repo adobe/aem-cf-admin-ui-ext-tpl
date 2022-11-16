@@ -29,7 +29,8 @@ const briefOverviews = {
 }
 
 const promptDocs = {
-  mainDoc: "https://developer.adobe.com/uix/docs/"
+  mainDoc: "https://developer.adobe.com/uix/docs/",
+  configureSlackDoc: "https://developer.adobe.com/uix/docs/services/aem-cf-console-admin/code-generation/#configure-demo-application"
 }
 
 // Top Level prompts
@@ -294,7 +295,8 @@ const promptGuideMenu = (manifest) => {
 
 // Helper prompts for Guide Menu
 const helpPrompts = () => {
-  console.log(chalk.blue(chalk.bold(`Please refer to:\n  -> ${promptDocs['mainDoc']}`)) + '\n')
+  console.log('  Please refer to:')
+  console.log(chalk.blue(chalk.bold(`  -> ${promptDocs['mainDoc']}`)) + '\n')
 }
 
 const dummyPrompt = () => {
@@ -304,5 +306,6 @@ const dummyPrompt = () => {
 module.exports = {
   briefOverviews,
   promptTopLevelFields,
-  promptMainMenu
+  promptMainMenu,
+  promptDocs
 }

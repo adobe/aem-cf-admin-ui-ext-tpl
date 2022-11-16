@@ -1,8 +1,8 @@
 {
   "name": "@adobe/aem-cf-admin-ui-ext-tpl",
-  "version": "1.0.0-beta.11",
+  "version": "1.0.0-beta.12",
   "main": "src/index.js",
-  "description": "Extensibility Template for AEM Content Fragment Console",
+  "description": "Extensibility template for AEM Content Fragment Admin Console",
   "engines": {
     "node": "^14"
   },
@@ -25,9 +25,22 @@
     "@babel/plugin-transform-react-jsx": "^7.8.3",
     "@babel/polyfill": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
+    "@types/jest": "^28.1.8",
     "jest": "^27",
     "stdout-stderr": "^0.1.13",
-    "yeoman-test": "^6.3.0"
+    "yeoman-test": "^6.3.0",
+    "eol": "^0.9.1",
+    "eslint": "^7.1.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-jest": "^23.1.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "js-yaml": "^4.1.0",
+    "yeoman-assert": "^3.1.1",
+    "yeoman-environment": "^3.2.0",
+    "lodash.clonedeep": "^4.5.0"
   },
   "peerDependencies": {
     "@adobe/aio-cli-plugin-app-templates": "^1.0.0"
