@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 const Generator = require('yeoman-generator')
 const path = require('path')
 const upath = require('upath')
-const fs = require('fs-extra')
+// const fs = require('fs-extra')
 const chalk = require('chalk')
 
 const CFAdminActionGenerator = require('./generator-add-action-cf-admin')
