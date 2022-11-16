@@ -9,20 +9,18 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-/* eslint-disable jest/expect-expect */
-
 const helpers = require('yeoman-test')
-/* eslint-disable-next-line node/no-unpublished-require */
 const assert = require('yeoman-assert')
-/* eslint-disable-next-line node/no-unpublished-require */
 const cloneDeep = require('lodash.clonedeep')
-/* eslint-disable-next-line node/no-unpublished-require */
+
 const yaml = require('js-yaml')
 const fs = require('fs')
-const { ActionGenerator, constants } = require('@adobe/generator-app-common-lib')
-const CFAdminActionGenerator = require('../src/generator-add-action-cf-admin')
 const path = require('path')
 
+const CFAdminActionGenerator = require('../src/generator-add-action-cf-admin')
+
+const { ActionGenerator, constants } = require('@adobe/generator-app-common-lib')
+const { runtimeManifestKey, defaultRuntimeKind } = constants
 const { customExtensionManifest, demoExtensionManifest } = require('./test-manifests')
 
 const extFolder = 'src/aem-cf-console-admin-1'
@@ -33,7 +31,7 @@ const actionName = 'generic'
 const basicGeneratorOptions = {
   'action-folder': actionFolder,
   'config-path': extConfigPath,
-  'full-key-to-manifest': 'runtimeManifest',
+  'full-key-to-manifest': runtimeManifestKey,
   'action-name': actionName,
   'extension-manifest': customExtensionManifest
 }
@@ -74,7 +72,7 @@ function assertManifestContent (actionName) {
   expect(json.runtimeManifest.packages[packageName].actions[actionName]).toEqual({
     function: `actions/${actionName}/index.js`,
     web: 'yes',
-    runtime: 'nodejs:14',
+    runtime: defaultRuntimeKind,
     inputs: {
       LOG_LEVEL: 'debug',
       API_ENDPOINT: '$API_ENDPOINT'

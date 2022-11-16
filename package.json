@@ -1,6 +1,6 @@
 {
   "name": "@adobe/aem-cf-admin-ui-ext-tpl",
-  "version": "1.0.0-beta.12",
+  "version": "1.0.0-beta.13",
   "main": "src/index.js",
   "description": "Extensibility template for AEM Content Fragment Admin Console",
   "engines": {
@@ -12,8 +12,7 @@
   "author": "Adobe Inc.",
   "license": "Apache-2.0",
   "dependencies": {
-    "@adobe/generator-add-action-generic": "^0.2.3",
-    "@adobe/generator-app-common-lib": "^0.3.1",
+    "@adobe/generator-app-common-lib": "^0.3.3",
     "chalk": "^4.0.0",
     "fs-extra": "^10.1.0",
     "slugify": "^1.6.5",
