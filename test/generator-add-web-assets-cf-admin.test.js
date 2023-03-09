@@ -57,7 +57,6 @@ function assertFiles (extensionManifest) {
   assert.file(`${webSrcFolder}/src/index.js`)
   assert.file(`${webSrcFolder}/src/utils.js`)
   assert.file(`${webSrcFolder}/src/components/Constants.js`)
-  assert.file(`${webSrcFolder}/src/components/Spinner.js`)
   assert.file(`${webSrcFolder}/src/components/App.js`)
   assert.file(`${webSrcFolder}/src/components/ExtensionRegistration.js`)
 
