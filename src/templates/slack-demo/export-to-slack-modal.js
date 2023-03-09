@@ -31,7 +31,6 @@ import {
 
 import allActions from '../config.json'
 import actionWebInvoke from '../utils'
-import Spinner from "./Spinner"
 
 import { extensionId } from "./Constants"
 
@@ -45,7 +44,6 @@ export default function <%- functionName %> () {
   const { fragments } = useParams()
 
   // Action state
-  const [isLoading, setIsLoading] = useState(false)
   const [isNotifying, setIsNotifying] = useState(false)
   const [isRequestComplete, setIsRequestComplete] = useState(false)
 
@@ -61,6 +59,7 @@ export default function <%- functionName %> () {
 
       setGuestConnection(guestConnection)
       setSlackMessage(fragments)
+      guestConnection.host.modal.set({ loading: false });
     })()
   }, [])
 
@@ -69,7 +68,7 @@ export default function <%- functionName %> () {
   }
 
   const onCloseHandler = () => {
-    guestConnection.host.modal.close()()
+    guestConnection.host.modal.close()
   }
 
   const onNotifySlackHandler = async () => {
@@ -100,29 +99,23 @@ export default function <%- functionName %> () {
   return (
     <Provider theme={defaultTheme} colorScheme='light'>
       <Content width="100%">
-      {
-        isLoading ? (
-          <Spinner />
-        ) : (
-          <Form>
-            <TextArea value={slackMessage} height="size-2000" isReadOnly/>
+        <Form>
+          <TextArea value={slackMessage} height="size-2000" isReadOnly/>
 
-            <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
-              {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
-              <ButtonGroup marginStart="size-200">
-                <Button variant="primary" onPress={onCloseHandler}>Close</Button>
-                <Button variant="cta" onPress={onNotifySlackHandler}>Send</Button>
-              </ButtonGroup>
-            </Flex>
-            {isRequestComplete && (
-              <IllustratedMessage>
-                <Heading>{status}</Heading>
-                <Content>{message}</Content>
-              </IllustratedMessage>
-            )}
-          </Form>
-        )
-      }
+          <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
+            {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
+            <ButtonGroup marginStart="size-200">
+              <Button variant="primary" onPress={onCloseHandler}>Close</Button>
+              <Button variant="cta" onPress={onNotifySlackHandler}>Send</Button>
+            </ButtonGroup>
+          </Flex>
+          {isRequestComplete && (
+            <IllustratedMessage>
+              <Heading>{status}</Heading>
+              <Content>{message}</Content>
+            </IllustratedMessage>
+          )}
+        </Form>
       </Content>
     </Provider>
   )
