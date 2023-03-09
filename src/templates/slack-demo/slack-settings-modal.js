@@ -37,7 +37,6 @@ import {
 
 import allActions from '../config.json'
 import actionWebInvoke from '../utils'
-import Spinner from "./Spinner"
 
 import { extensionId } from "./Constants"
 
@@ -55,7 +54,6 @@ export default function <%- functionName %> () {
   const [sharedContext, setSharedContext] = useState()
 
   // Action state
-  const [isLoading, setIsLoading] = useState(true)
   const [isRequestComplete, setIsRequestComplete] = useState(false)
 
   useEffect (() => {
@@ -64,8 +62,7 @@ export default function <%- functionName %> () {
       setGuestConnection(connection)
       setSharedContext(connection.sharedContext)
       await getSlackConfig()
- 
-      setIsLoading(false)
+      connection.host.modal.set({ loading: false });
     })()
   }, [])
 
@@ -101,52 +98,45 @@ export default function <%- functionName %> () {
   return (
     <Provider theme={defaultTheme} colorScheme='light'>
       <Content width="100%">
-        {
-          isLoading ? (
-            <Spinner />
-          ) : (
-            <Tabs aria-label="Slack Settings" isQuiet>
-              <TabList>
-                <Item key="status">Status</Item>
-                <Item key="import">Import Fragments</Item>
-              </TabList>
-              <TabPanels>
-                <Item key="status">
-                  <Form>
-                    <StatusLight variant={foundSlackWebhook ? ('positive') : ('negative')}>{foundSlackWebhook ? ("Slack Webhook URL is set up") : ("Slack Webhook URL is not set up")}</StatusLight>
-                    <StatusLight variant={foundSlackChannel ? ('positive') : ('negative')}>{foundSlackChannel ? ("Slack Channel is set up") : ("Slack Channel is not set up")}</StatusLight>
-                    <StatusLight variant={foundSlackOAuthToken ? ('positive') : ('negative')}>{foundSlackOAuthToken ? ("Slack OAuth Token is set up") : ("Slack OAuth Token is not set up")}</StatusLight>
-                  </Form>
-                </Item>
-                <Item key="import">
-                  <Flex width="100%" justifyContent="left" alignItems="end" marginTop="size-200" gap="size-200">
-                    <Picker
-                      label="Select a Slack Channel"
-                      items={slackChannels}
-                      onSelectionChange={setSlackChannelId}
-                      width="40%"
-                    >
-                      {(item) => <Item>{item.name}</Item>}
-                    </Picker>
-                    <TooltipTrigger>
-                      <Button variant="cta" onPress={onImportHandler}>Import</Button>
-                      <Tooltip>Imports a valid Content Fragment (most recent) from the selected Slack Channel.</Tooltip>
-                    </TooltipTrigger>
-                  </Flex>
-                  
-                  <View height="size-600" />
-                </Item>
-              </TabPanels>
-              <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
-                <ButtonGroup marginStart="size-200">
-                  <Button variant="primary" onPress={onCloseHandler}>Close</Button>
-                  <Button variant="secondary" onPress={onHelpHandler}>Help</Button>
-                </ButtonGroup>
+        <Tabs aria-label="Slack Settings" isQuiet>
+          <TabList>
+            <Item key="status">Status</Item>
+            <Item key="import">Import Fragments</Item>
+          </TabList>
+          <TabPanels>
+            <Item key="status">
+              <Form>
+                <StatusLight variant={foundSlackWebhook ? ('positive') : ('negative')}>{foundSlackWebhook ? ("Slack Webhook URL is set up") : ("Slack Webhook URL is not set up")}</StatusLight>
+                <StatusLight variant={foundSlackChannel ? ('positive') : ('negative')}>{foundSlackChannel ? ("Slack Channel is set up") : ("Slack Channel is not set up")}</StatusLight>
+                <StatusLight variant={foundSlackOAuthToken ? ('positive') : ('negative')}>{foundSlackOAuthToken ? ("Slack OAuth Token is set up") : ("Slack OAuth Token is not set up")}</StatusLight>
+              </Form>
+            </Item>
+            <Item key="import">
+              <Flex width="100%" justifyContent="left" alignItems="end" marginTop="size-200" gap="size-200">
+                <Picker
+                  label="Select a Slack Channel"
+                  items={slackChannels}
+                  onSelectionChange={setSlackChannelId}
+                  width="40%"
+                >
+                  {(item) => <Item>{item.name}</Item>}
+                </Picker>
+                <TooltipTrigger>
+                  <Button variant="cta" onPress={onImportHandler}>Import</Button>
+                  <Tooltip>Imports a valid Content Fragment (most recent) from the selected Slack Channel.</Tooltip>
+                </TooltipTrigger>
               </Flex>
-            </Tabs>
-            
-          )
-        }
+              
+              <View height="size-600" />
+            </Item>
+          </TabPanels>
+          <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
+            <ButtonGroup marginStart="size-200">
+              <Button variant="primary" onPress={onCloseHandler}>Close</Button>
+              <Button variant="secondary" onPress={onHelpHandler}>Help</Button>
+            </ButtonGroup>
+          </Flex>
+        </Tabs>
         <View height="size-200" />
         {(isRequestComplete || !foundSlackWebhook || !foundSlackChannel || !foundSlackOAuthToken) && (
           <IllustratedMessage>
