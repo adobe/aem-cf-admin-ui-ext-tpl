@@ -4,7 +4,7 @@
   "main": "src/index.js",
   "description": "Extensibility template for AEM Content Fragment Admin Console",
   "engines": {
-    "node": "^14.18 || ^16.13 || >=18"
+    "node": "^14 || ^16"
   },
   "keywords": [
     "ecosystem:aio-app-builder-templates"
