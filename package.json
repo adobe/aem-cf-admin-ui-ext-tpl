@@ -3,9 +3,6 @@
   "version": "1.0.0-beta.17",
   "main": "src/index.js",
   "description": "Extensibility template for AEM Content Fragment Admin Console",
-  "engines": {
-    "node": "^16"
-  },
   "keywords": [
     "ecosystem:aio-app-builder-templates"
   ],
