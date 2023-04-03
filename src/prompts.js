@@ -163,10 +163,6 @@ const nestedButtonPrompts = (manifest, manifestNodeName) => {
       })
       // console.log(JSON.stringify(answers, null, '  '))
       manifest[manifestNodeName] = manifest[manifestNodeName] || []
-      if (manifest[manifestNodeName].length + 1 > 1) {
-        console.log(chalk.red(chalk.bold("The creation of multiple buttons is not yet supported.\n")))
-        return
-      }
       manifest[manifestNodeName].push(answers)
     })
     .catch((error) => {
