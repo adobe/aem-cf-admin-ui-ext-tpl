@@ -2,49 +2,47 @@
  * <license header>
  */
 
-import React from "react"
-import ErrorBoundary from "react-error-boundary"
-
-import { HashRouter as Router, Routes, Route } from "react-router-dom"
-
-import ExtensionRegistration from "./ExtensionRegistration"
+import React from "react";
+import ErrorBoundary from "react-error-boundary";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import ExtensionRegistration from "./ExtensionRegistration";
 <%# "Add import statements for modals" -%>
-<% const actionBarButtons = extensionManifest.actionBarButtons || [] -%>
-<% const headerMenuButtons = extensionManifest.headerMenuButtons || [] -%>
-<% const allCustomButtons = actionBarButtons.concat(headerMenuButtons) -%>
-<% allCustomButtons.forEach((button) => { -%>
-  <% if (button.needsModal) { -%>
-    <% const modalFileName = button.label.replace(/ /g, '') + 'Modal' %>
-import <%- modalFileName %> from "./<%- modalFileName %>"
-<% }}) -%>
+<%_ const actionBarButtons = extensionManifest.actionBarButtons || [] -%>
+<%_ const headerMenuButtons = extensionManifest.headerMenuButtons || [] -%>
+<%_ const allCustomButtons = actionBarButtons.concat(headerMenuButtons) -%>
+<%_ allCustomButtons.forEach((button) => { -%>
+  <%_ if (button.needsModal) { -%>
+    <%_ const modalFileName = button.label.replace(/ /g, '') + 'Modal' -%>
+import <%- modalFileName %> from "./<%- modalFileName %>";
+<%_ }}) -%>
 
-function App(props) {
+function App() {
   return (
     <Router>
       <ErrorBoundary onError={onError} FallbackComponent={fallbackComponent}>
         <Routes>
           <Route index element={<ExtensionRegistration />} />
-          
           <Route
             exact path="index.html"
             element={<ExtensionRegistration />} 
           />
-          <% if (extensionManifest.actionBarButtons) { -%>
-            <% extensionManifest.actionBarButtons.forEach((button) => { -%>
-              <% if (button.needsModal) { %>
+          <%_ if (extensionManifest.actionBarButtons) { -%>
+            <%_ extensionManifest.actionBarButtons.forEach((button) => { -%>
+              <%_ if (button.needsModal) { -%>
           <Route
             exact path="content-fragment/:fragmentId/<%- button.id %>-modal"
             element={<<%- button.label.replace(/ /g, '') %>Modal />}
           />
-          <% }})} -%>
-          <% if (extensionManifest.headerMenuButtons) { -%>
-            <% extensionManifest.headerMenuButtons.forEach((button) => { -%>
-              <% if (button.needsModal) { %>
+          <%_ }})} -%>
+          <%_ if (extensionManifest.headerMenuButtons) { -%>
+            <%_ extensionManifest.headerMenuButtons.forEach((button) => { -%>
+              <%_ if (button.needsModal) { -%>
           <Route
             exact path="<%- button.id %>-modal"
             element={<<%- button.label.replace(/ /g, '') %>Modal />}
           />
-          <% }})} %>
+          <%_ }})} -%>
+          <!-- YOUR CUSTOM ROUTES SHOULD BE HERE -->
         </Routes>
       </ErrorBoundary>
     </Router>

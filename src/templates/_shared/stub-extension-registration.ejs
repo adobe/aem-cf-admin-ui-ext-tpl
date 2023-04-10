@@ -2,94 +2,79 @@
  * <license header>
  */
 
-import { generatePath } from "react-router"
-import { Text } from "@adobe/react-spectrum"
-import { register } from "@adobe/uix-guest"
-
-import { extensionId } from "./Constants"
+import { generatePath } from "react-router";
+import { Text } from "@adobe/react-spectrum";
+import { register } from "@adobe/uix-guest";
+import { extensionId } from "./Constants";
 
 function ExtensionRegistration() {
   const init = async () => {
     const guestConnection = await register({
       id: extensionId,
       methods: {
-        <% if (extensionManifest.actionBarButtons || extensionManifest.headerMenuButtons) { -%>
-          <% if (extensionManifest.actionBarButtons) { %>
-        <% if (extensionManifest.actionBarButtons.length > 1) { %>// Configure your Action Bar buttons here.<% } else { %>// Configure your Action Bar button here<% } %>
+        <%_ if (extensionManifest.actionBarButtons || extensionManifest.headerMenuButtons) { -%>
+          <%_ if (extensionManifest.actionBarButtons) { -%>
         actionBar: {
-          getButton() {
-            return <% if (extensionManifest.actionBarButtons.length > 1) { %>[<% } else { %>{<% } -%>
-              <% extensionManifest.actionBarButtons.forEach((button) => { %>
-              <% if (extensionManifest.actionBarButtons.length > 1) { %>{<% } %>
+          getButtons() {
+            return [
+              <!-- YOUR ACTION BAR BUTTONS CODE SHOULD BE HERE -->
+              <%_ extensionManifest.actionBarButtons.forEach((button) => { -%>
+              {
                 'id': '<%- button.id %>',
                 'label': '<%- button.label %>',
-                'icon': 'PublishCheck'
-              }<% if (extensionManifest.actionBarButtons.length > 1) { %>,<% } -%>
-              <% }) %>
-            <% if (extensionManifest.actionBarButtons.length > 1) { %>]<% } %>
+                'icon': 'PublishCheck',
+                onClick(selections) {
+                <%_ if (button.needsModal) { -%>
+                  const modalURL = "/index.html#" + generatePath("/content-fragment/:fragmentId/<%- button.id %>-modal", {
+                    fragmentId: encodeURIComponent(selections[0].id),
+                  });
+                  console.log("Modal URL: ", modalURL);
+
+                  guestConnection.host.modal.showUrl({
+                    title: "<%- button.label %>",
+                    url: modalURL,
+                  });
+                <%_ } -%>
+                },
+              },
+              <%_ }) -%>
+            ];
           },
-          <% if (extensionManifest.actionBarButtons.length > 1) { %>
-          onClick(buttonId, selections) {
-          <% } else { %>
-          onClick(selections) {
-          <% } -%>
-            <% extensionManifest.actionBarButtons.forEach((button) => { -%>
-              <% if (button.needsModal) { -%>
-            <% if (extensionManifest.actionBarButtons.length > 1) { %>if (buttonId === '<%- button.id %>') {<% } %>
-            const modalURL = "/index.html#" + generatePath("/content-fragment/:fragmentId/<%- button.id %>-modal", {
-                fragmentId: encodeURIComponent(selections[0].id),
-              })
-            console.log("Modal URL: ", modalURL)
-            
-            guestConnection.host.modal.showUrl({
-              title: "<%- button.label %>",
-              url: modalURL
-            })
-            <% if (extensionManifest.actionBarButtons.length > 1) { %>}<% } -%>
-            <% }}) %>
-          }
         },
-        <% } -%>
-          <% if (extensionManifest.headerMenuButtons) { %>
-        <% if (extensionManifest.headerMenuButtons.length > 1) { %>// Configure your Header Menu buttons here<% } else { %>// Configure your Header Menu button here<% } %>
+        <%_ } -%>
+          <%_ if (extensionManifest.headerMenuButtons) { -%>
         headerMenu: {
-          getButton() {
-            return <% if (extensionManifest.headerMenuButtons.length > 1) { %>[<% } else { %>{<% } -%>
-              <% extensionManifest.headerMenuButtons.forEach((button) => { %>
-              <% if (extensionManifest.headerMenuButtons.length > 1) { %>{<% } %>
+          getButtons() {
+            return [
+              <!-- YOUR HEADER BUTTONS CODE SHOULD BE HERE -->
+              <%_ extensionManifest.headerMenuButtons.forEach((button) => { -%>
+              {
                 'id': '<%- button.id %>',
                 'label': '<%- button.label %>',
-                'icon': 'OpenIn'
-              }<% if (extensionManifest.headerMenuButtons.length > 1) { %>,<% } -%>
-              <% }) %>
-            <% if (extensionManifest.headerMenuButtons.length > 1) { %>]<% } %>
+                'icon': 'OpenIn',
+                onClick() {
+                <%_ if (button.needsModal) { -%>
+                  const modalURL = "/index.html#/<%- button.id %>-modal";
+                  console.log("Modal URL: ", modalURL);
+
+                  guestConnection.host.modal.showUrl({
+                    title: "<%- button.label %>",
+                    url: modalURL,
+                  });
+                <%_ } -%>
+                },
+              },
+              <%_ }) -%>
+            ];
           },
-          <% if (extensionManifest.headerMenuButtons.length > 1) { %>
-          onClick(buttonId) {
-          <% } else { %>
-          onClick() {
-          <% } -%>
-            <% extensionManifest.headerMenuButtons.forEach((button) => { -%>
-              <% if (button.needsModal) { -%>
-            <% if (extensionManifest.headerMenuButtons.length > 1) { %>if (buttonId === '<%- button.id %>') {<% } %>
-            const modalURL = "/index.html#/<%- button.id %>-modal"
-            console.log("Modal URL: ", modalURL)
-            
-            guestConnection.host.modal.showUrl({
-              title: "<%- button.label %>",
-              url: modalURL
-            })
-            <% if (extensionManifest.headerMenuButtons.length > 1) { %>}<% } -%>
-            <% }}) %>
-          }
-        }
-        <% }} %>
-      }
-    })
-  }
-  init().catch(console.error)
+        },
+          <%_ }} -%>
+      },
+    });
+  };
+  init().catch(console.error);
 
   return <Text>IFrame for integration with Host (AEM)...</Text>
 }
 
-export default ExtensionRegistration
+export default ExtensionRegistration;
