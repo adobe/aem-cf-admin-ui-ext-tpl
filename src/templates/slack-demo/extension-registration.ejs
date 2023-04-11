@@ -10,84 +10,45 @@
  * governing permissions and limitations under the License.
  */
 
-import { generatePath } from "react-router"
-import { Text } from "@adobe/react-spectrum"
-import { register } from "@adobe/uix-guest"
-
-import { extensionId } from "./Constants"
+import { Text } from "@adobe/react-spectrum";
+import { register } from "@adobe/uix-guest";
+import { extensionId } from "./Constants";
 
 function ExtensionRegistration() {
   const init = async () => {
     const guestConnection = await register({
       id: extensionId,
       methods: {
-        actionBar: {
-          getButton() {
-            return {
-              <% extensionManifest.actionBarButtons.forEach((button) => { %>
-              'id': '<%- button.id %>',
-              'label': '<%- button.label %>',
-              'icon': 'PublishCheck'
-              <% }) %>
-            }
-          },
-          
-          onClick(selections) {
-            <% extensionManifest.actionBarButtons.forEach((button) => { -%>
-              <% if (button.needsModal) { %>
-            
-            const selectedFrags = {
-              selectedContentFragments: selections.map((selection) => ({
-                'id': selection.id, 
-                'modelId': selection.model.id, 
-                'folderId': selection.folderId, 
-                'name': selection.name, 
-                'title': `${selection.title} (copy)`
-              }))
-            }
-            
-            const modalURL = "/index.html#" + generatePath("/content-fragment/:fragments/<%- button.id %>-modal", {
-                fragments: encodeURIComponent(JSON.stringify(selectedFrags, null, 2))
-              })
-            console.log("Modal URL: ", modalURL)
-            
-            guestConnection.host.modal.showUrl({
-              title: "<%- button.label %>",
-              url: modalURL
-            })
-            <% }}) %>
-          }
-        },
         headerMenu: {
-          getButton() {
-            return {
-              <% extensionManifest.headerMenuButtons.forEach((button) => { %>
-              'id': '<%- button.id %>',
-              'label': '<%- button.label %>',
-              'icon': 'OpenIn'
-              <% }) %>
-            }
-          },
-          onClick() {
-            <% extensionManifest.headerMenuButtons.forEach((button) => { -%>
-              <% if (button.needsModal) { -%>
-            <% if (extensionManifest.headerMenuButtons.length > 1) { %>if (buttonId === '<%- button.id %>') {<% } %>
-            const modalURL = "/index.html#/<%- button.id %>-modal"
-            console.log("Modal URL: ", modalURL)
-            
-            guestConnection.host.modal.showUrl({
-              title: "<%- button.label %>",
-              url: modalURL
-            })
-            <% }}) %>
-          }
-        }
-      }
-    })
-  }
-  init().catch(console.error)
+          getButtons() {
+            return [
+              <%_ extensionManifest.headerMenuButtons.forEach((button) => { -%>
+              {
+                'id': '<%- button.id %>',
+                'label': '<%- button.label %>',
+                'icon': 'OpenIn',
+                onClick() {
+                  <%_ if (button.needsModal) { -%>
+                  const modalURL = "/index.html#/<%- button.id %>-modal";
+                  console.log("Modal URL: ", modalURL);
 
-  return <Text>IFrame for integration with Host (AEM)...</Text>
+                  guestConnection.host.modal.showUrl({
+                    title: "<%- button.label %>",
+                    url: modalURL,
+                  });
+                  <%_ } -%>
+                },
+              },
+              <%_ }) -%>
+            ];
+          },
+        },
+      },
+    });
+  };
+  init().catch(console.error);
+
+  return <Text>IFrame for integration with Host (AEM)...</Text>;
 }
 
-export default ExtensionRegistration
+export default ExtensionRegistration;
