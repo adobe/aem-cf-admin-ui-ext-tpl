@@ -17,7 +17,7 @@ function ExtensionRegistration() {
         actionBar: {
           getButtons() {
             return [
-              <!-- YOUR ACTION BAR BUTTONS CODE SHOULD BE HERE -->
+              // YOUR ACTION BAR BUTTONS CODE SHOULD BE HERE
               <%_ extensionManifest.actionBarButtons.forEach((button) => { -%>
               {
                 'id': '<%- button.id %>',
@@ -46,7 +46,7 @@ function ExtensionRegistration() {
         headerMenu: {
           getButtons() {
             return [
-              <!-- YOUR HEADER BUTTONS CODE SHOULD BE HERE -->
+              // YOUR HEADER BUTTONS CODE SHOULD BE HERE
               <%_ extensionManifest.headerMenuButtons.forEach((button) => { -%>
               {
                 'id': '<%- button.id %>',
