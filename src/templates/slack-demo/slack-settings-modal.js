@@ -19,7 +19,6 @@ import {
   Provider,
   Content,
   defaultTheme,
-  TextField,
   ButtonGroup,
   Button,
   Heading,
@@ -37,10 +36,7 @@ import {
 
 import allActions from '../config.json'
 import actionWebInvoke from '../utils'
-import Spinner from "./Spinner"
-
 import { extensionId } from "./Constants"
-
 
 export default function <%- functionName %> () {
   // Fields
@@ -55,17 +51,22 @@ export default function <%- functionName %> () {
   const [sharedContext, setSharedContext] = useState()
 
   // Action state
-  const [isLoading, setIsLoading] = useState(true)
-  const [isRequestComplete, setIsRequestComplete] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect (() => {
     (async () => {
       const connection = await attach({ id: extensionId })
       setGuestConnection(connection)
       setSharedContext(connection.sharedContext)
-      await getSlackConfig()
- 
-      setIsLoading(false)
+
+      await getSlackConfig().then((result) => {
+        if (!result) {
+          connection.host.toaster.display({ variant: "negative", message: "Please specify valid Slack Webhook URL, Channel and OAuth Token in your .env file."});
+          onHelpHandler()
+        }
+      })
+
+      connection.host.modal.set({ loading: false });
     })()
   }, [])
 
@@ -75,11 +76,11 @@ export default function <%- functionName %> () {
 
   const onHelpHandler = () => {
     setStatus("Set up Slack App")
-    setMessage("https://api.slack.com/apps")
-    setIsRequestComplete(true)
+    setMessage("https://developer.adobe.com/uix/docs/services/aem-cf-console-admin/code-generation/#configure-demo-application")
   }
 
   const onImportHandler = async () => {
+    setIsLoading(true)
     const res = await actionWebInvoke(
       allActions['import-from-slack'],
       {},
@@ -89,71 +90,65 @@ export default function <%- functionName %> () {
 
     if (res.error) {
       console.log(res.error)
-      setStatus("Request Failed")
-      setMessage(res.error)
-      setIsRequestComplete(true)
+      guestConnection.host.toaster.display({ variant: "negative", message: res.error});
     } else {
       console.log(res.message)
       await createNewFragments(res)
     }
+    console.log(res)
+    setIsLoading(false)
   }
 
   return (
     <Provider theme={defaultTheme} colorScheme='light'>
       <Content width="100%">
-        {
-          isLoading ? (
-            <Spinner />
-          ) : (
-            <Tabs aria-label="Slack Settings" isQuiet>
-              <TabList>
-                <Item key="status">Status</Item>
-                <Item key="import">Import Fragments</Item>
-              </TabList>
-              <TabPanels>
-                <Item key="status">
-                  <Form>
-                    <StatusLight variant={foundSlackWebhook ? ('positive') : ('negative')}>{foundSlackWebhook ? ("Slack Webhook URL is set up") : ("Slack Webhook URL is not set up")}</StatusLight>
-                    <StatusLight variant={foundSlackChannel ? ('positive') : ('negative')}>{foundSlackChannel ? ("Slack Channel is set up") : ("Slack Channel is not set up")}</StatusLight>
-                    <StatusLight variant={foundSlackOAuthToken ? ('positive') : ('negative')}>{foundSlackOAuthToken ? ("Slack OAuth Token is set up") : ("Slack OAuth Token is not set up")}</StatusLight>
-                  </Form>
-                </Item>
-                <Item key="import">
-                  <Flex width="100%" justifyContent="left" alignItems="end" marginTop="size-200" gap="size-200">
-                    <Picker
-                      label="Select a Slack Channel"
-                      items={slackChannels}
-                      onSelectionChange={setSlackChannelId}
-                      width="40%"
-                    >
-                      {(item) => <Item>{item.name}</Item>}
-                    </Picker>
-                    <TooltipTrigger>
-                      <Button variant="cta" onPress={onImportHandler}>Import</Button>
-                      <Tooltip>Imports a valid Content Fragment (most recent) from the selected Slack Channel.</Tooltip>
-                    </TooltipTrigger>
-                  </Flex>
-                  
-                  <View height="size-600" />
-                </Item>
-              </TabPanels>
-              <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
-                <ButtonGroup marginStart="size-200">
-                  <Button variant="primary" onPress={onCloseHandler}>Close</Button>
-                  <Button variant="secondary" onPress={onHelpHandler}>Help</Button>
-                </ButtonGroup>
+        <Tabs aria-label="Slack Settings" isQuiet>
+          <TabList>
+            <Item key="status">Status</Item>
+            <Item key="import">Import Fragments</Item>
+          </TabList>
+          <TabPanels>
+            <Item key="status">
+              <Form>
+                <StatusLight variant={foundSlackWebhook ? ('positive') : ('negative')}>{foundSlackWebhook ? ("Slack Webhook URL is set up") : ("Slack Webhook URL is not set up")}</StatusLight>
+                <StatusLight variant={foundSlackChannel ? ('positive') : ('negative')}>{foundSlackChannel ? ("Slack Channel is set up") : ("Slack Channel is not set up")}</StatusLight>
+                <StatusLight variant={foundSlackOAuthToken ? ('positive') : ('negative')}>{foundSlackOAuthToken ? ("Slack OAuth Token is set up") : ("Slack OAuth Token is not set up")}</StatusLight>
+              </Form>
+            </Item>
+            <Item key="import">
+              <Flex width="100%" justifyContent="left" alignItems="end" marginTop="size-200" gap="size-200">
+                <Picker
+                  label="Select a Slack Channel"
+                  items={slackChannels}
+                  onSelectionChange={setSlackChannelId}
+                  width="40%"
+                >
+                  {(item) => <Item>{item.name}</Item>}
+                </Picker>
+                <Flex alignItems="center" gap="size-200">
+                  <TooltipTrigger>
+                    <Button variant="cta" onPress={onImportHandler}>Import</Button>
+                    <Tooltip>Imports a valid Content Fragment (most recent) from the selected Slack Channel.</Tooltip>
+                  </TooltipTrigger>
+                  {isLoading && <ProgressCircle size="S" aria-label="Loading..." isIndeterminate />}
+                </Flex>
               </Flex>
-            </Tabs>
-            
-          )
-        }
+              
+              <View height="size-600" />
+            </Item>
+          </TabPanels>
+          <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
+            <ButtonGroup marginStart="size-200">
+              <Button variant="primary" onPress={onCloseHandler}>Close</Button>
+              <Button variant="secondary" onPress={onHelpHandler}>Help</Button>
+            </ButtonGroup>
+          </Flex>
+        </Tabs>
         <View height="size-200" />
-        {(isRequestComplete || !foundSlackWebhook || !foundSlackChannel || !foundSlackOAuthToken) && (
-          <IllustratedMessage>
-            <Heading>{status}</Heading>
-            <Content>{message}</Content>
-          </IllustratedMessage>
-        )}
+        <IllustratedMessage>
+          <Heading>{status}</Heading>
+          <Content>{message}</Content>
+        </IllustratedMessage>
       </Content>
     </Provider>
   )
@@ -168,13 +163,10 @@ export default function <%- functionName %> () {
 
     if (res.error) {
       console.log(res.error)
-      setStatus("Request Failed")
-      setMessage(res.error)
-      setIsRequestComplete(true)
-    } else {
-      setStatus("Set up your .env file")
-      setMessage("Please specify valid Slack Webhook URL, Channel and OAuth Token.")
 
+      guestConnection.host.toaster.display({ variant: "negative", message: res.error});
+
+    } else {
       if (res.slackWebhook !== '') {
         setFoundSlackWebhook(true)
       }
@@ -188,6 +180,16 @@ export default function <%- functionName %> () {
         await getSlackChannels()
       }
     }
+
+    console.log(foundSlackWebhook)
+    console.log(foundSlackChannel)
+    console.log(foundSlackOAuthToken)
+
+    if (res.slackWebhook === '' || res.slackChannel === '' || res.slackOAuthToken === '') {
+      return Promise.resolve(false)
+    }
+
+    return Promise.resolve(true)
   }
 
   async function createNewFragments(resImportFromSlack) {
@@ -203,13 +205,10 @@ export default function <%- functionName %> () {
 
     if (res.error) {
       console.log(res.error)
-      setStatus("Request Failed")
-      setMessage(res.error)
+      guestConnection.host.toaster.display({ variant: "negative", message: res.error});
     } else {
-      setStatus("Request Success")
-      setMessage(res.message)
+      guestConnection.host.toaster.display({ variant: "positive", message: res.message});
     }
-    setIsRequestComplete(true)
   }
 
   async function getSlackChannels() {
@@ -222,9 +221,7 @@ export default function <%- functionName %> () {
 
     if (res.error) {
       console.log(res.error)
-      setStatus("Request Failed")
-      setMessage(res.error)
-      setIsRequestComplete(true)
+      guestConnection.host.toaster.display({ variant: "negative", message: res.error});
     } else {
       setSlackChannels(res.slackChannels)
     }

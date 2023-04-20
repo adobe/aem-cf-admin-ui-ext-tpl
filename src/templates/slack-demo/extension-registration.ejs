@@ -10,7 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
-import { Text } from "@adobe/react-spectrum";
+ import { generatePath } from "react-router";
+ import { Text } from "@adobe/react-spectrum";
 import { register } from "@adobe/uix-guest";
 import { extensionId } from "./Constants";
 
@@ -19,6 +20,46 @@ function ExtensionRegistration() {
     const guestConnection = await register({
       id: extensionId,
       methods: {
+        actionBar: {
+          getButtons() {
+            return [
+              <%_ extensionManifest.actionBarButtons.forEach((button) => { -%>
+              {
+                'id': '<%- button.id %>',
+                'label': '<%- button.label %>',
+                'icon': 'PublishCheck',
+                onClick(selections) {
+                    <%_ if (button.needsModal) { -%>
+                  
+                  const selectedFrags = {
+                    selectedContentFragments: selections.map((selection) => ({
+                      'id': selection.id, 
+                      'modelId': selection.model.id, 
+                      'folderId': selection.folderId, 
+                      'name': selection.name, 
+                      'title': `${selection.title} (copy)`,
+                    }))
+                  }
+                  
+                  const modalURL = "/index.html#" + generatePath("/content-fragment/:fragments/<%- button.id %>-modal", {
+                      fragments: encodeURIComponent(JSON.stringify(selectedFrags, null, 2))
+                    })
+                  console.log("Modal URL: ", modalURL);
+                  
+                  guestConnection.host.modal.showUrl({
+                    title: "<%- button.label %>",
+                    url: modalURL,
+                    loading: true,
+                    width: "500px",
+                    height: "300px"
+                  });
+                  <%_ } -%>
+                },
+              },
+              <%_ }) -%>
+            ];
+          },
+        },
         headerMenu: {
           getButtons() {
             return [
@@ -35,6 +76,9 @@ function ExtensionRegistration() {
                   guestConnection.host.modal.showUrl({
                     title: "<%- button.label %>",
                     url: modalURL,
+                    loading: true,
+                    width: "500px",
+                    height: "300px"
                   });
                   <%_ } -%>
                 },
