@@ -22,34 +22,22 @@ import {
   defaultTheme,
   TextArea,
   ButtonGroup,
-  Button,
-  Heading,
-  View,
-  LabeledValue,
-  IllustratedMessage
+  Button
 } from '@adobe/react-spectrum'
 
 import allActions from '../config.json'
 import actionWebInvoke from '../utils'
-import Spinner from "./Spinner"
-
 import { extensionId } from "./Constants"
-
 
 export default function <%- functionName %> () {
   // Fields
   const [slackMessage, setSlackMessage] = useState('')
-  const [status, setStatus] = useState('')
-  const [message, setMessage] = useState('')
   const [guestConnection, setGuestConnection] = useState()
   const { fragments } = useParams()
 
   // Action state
-  const [isLoading, setIsLoading] = useState(false)
   const [isNotifying, setIsNotifying] = useState(false)
-  const [isRequestComplete, setIsRequestComplete] = useState(false)
 
-  
   if (!(fragments)) {
     console.error("Fragments are missing!")
     return
@@ -61,15 +49,12 @@ export default function <%- functionName %> () {
 
       setGuestConnection(guestConnection)
       setSlackMessage(fragments)
+      guestConnection.host.modal.set({ loading: false });
     })()
   }, [])
 
-  const reset = () => {
-    setSlackMessage('')
-  }
-
   const onCloseHandler = () => {
-    guestConnection.host.modal.close()()
+    guestConnection.host.modal.close()
   }
 
   const onNotifySlackHandler = async () => {
@@ -85,44 +70,29 @@ export default function <%- functionName %> () {
 
     if (res.error) {
       console.log(res.error)
-      setStatus("Request Failure")
-      setMessage(res.error)
+      guestConnection.host.toaster.display({ variant: "negative", message: res.error});
     } else {
       console.log(res.message)
-      setStatus("Request Success")
-      setMessage(res.message)
+      guestConnection.host.toaster.display({ variant: "positive", message: res.message});
     }
     console.log(res)
-    setIsRequestComplete(true)
     setIsNotifying(false)
   }
 
   return (
     <Provider theme={defaultTheme} colorScheme='light'>
       <Content width="100%">
-      {
-        isLoading ? (
-          <Spinner />
-        ) : (
-          <Form>
-            <TextArea value={slackMessage} height="size-2000" isReadOnly/>
+        <Form>
+          <TextArea value={slackMessage} height="size-3000" isReadOnly/>
 
-            <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
-              {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
-              <ButtonGroup marginStart="size-200">
-                <Button variant="primary" onPress={onCloseHandler}>Close</Button>
-                <Button variant="cta" onPress={onNotifySlackHandler}>Send</Button>
-              </ButtonGroup>
-            </Flex>
-            {isRequestComplete && (
-              <IllustratedMessage>
-                <Heading>{status}</Heading>
-                <Content>{message}</Content>
-              </IllustratedMessage>
-            )}
-          </Form>
-        )
-      }
+          <Flex width="100%" justifyContent="end" alignItems="center" marginTop="size-200">
+            {isNotifying && <ProgressCircle size="S" aria-label="Notifying..." isIndeterminate />}
+            <ButtonGroup marginStart="size-200">
+              <Button variant="primary" onPress={onCloseHandler}>Close</Button>
+              <Button variant="cta" onPress={onNotifySlackHandler}>Send</Button>
+            </ButtonGroup>
+          </Flex>
+        </Form>
       </Content>
     </Provider>
   )
