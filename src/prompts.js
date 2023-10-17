@@ -108,8 +108,16 @@ const promptMainMenu = (manifest) => {
       value: nestedButtonPrompts.bind(this, manifest, 'actionBarButtons'),
     },
     {
+      name: "Delete button from Action Bar",
+      value: nestedDeleteButtonPrompts.bind(this, manifest, 'actionBarButtonsDelete'),
+    },
+    {
       name: "Add a custom button to Header Menu",
       value: nestedButtonPrompts.bind(this, manifest, 'headerMenuButtons'),
+    },
+    {
+      name: "Delete button from Header Menu",
+      value: nestedDeleteButtonPrompts.bind(this, manifest, 'headerMenuButtonsDelete'),
     },
     {
       name: "Add server-side handler",
@@ -170,12 +178,51 @@ const nestedButtonPrompts = (manifest, manifestNodeName) => {
     })
 }
 
+const nestedDeleteButtonPrompts = (manifest, manifestNodeName) => {
+  const questions = [idPrompt()]
+
+  return inquirer
+      .prompt(questions)
+      .then((answers) => {
+        answers.id = slugify(answers.id, {
+          replacement: '-',  // replace spaces with replacement character, defaults to `-`
+          remove: undefined, // remove characters that match regex, defaults to `undefined`
+          lower: true,       // convert to lower case, defaults to `false`
+          strict: true,      // strip special characters except replacement, defaults to `false`
+          locale: 'vi',      // language code of the locale to use
+          trim: true         // trim leading and trailing replacement chars, defaults to `true`
+        })
+        // console.log(JSON.stringify(answers, null, '  '))
+        manifest[manifestNodeName] = manifest[manifestNodeName] || []
+        manifest[manifestNodeName].push(answers)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+}
+
+
 // Helper prompts for button metadata
 const labelPrompt = () => {
   return {
     type: 'input',
     name: 'label',
     message: "Please provide label name for the button:",
+    validate(answer) {
+      if (!answer.length) {
+        return 'Required.'
+      }
+
+      return true
+    },
+  }
+}
+
+const idPrompt = () => {
+  return {
+    type: 'input',
+    name: 'id',
+    message: "Please provide button id:",
     validate(answer) {
       if (!answer.length) {
         return 'Required.'
