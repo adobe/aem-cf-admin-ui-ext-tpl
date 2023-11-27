@@ -44,6 +44,12 @@ class CFAdminWebAssetsGenerator extends Generator {
       this.props
     )
 
+    // Copy hooks folder
+    this.fs.copyTpl(
+      this.templatePath('./templates/hooks/*'),
+      this.destinationPath('./hooks')
+    )
+
     // Generate App.js
     this._generateAppRoute()
 
@@ -67,6 +73,7 @@ class CFAdminWebAssetsGenerator extends Generator {
       '@adobe/uix-guest': '^0.8.0',
       '@react-spectrum/list': '^3.0.0-rc.0',
       '@spectrum-icons/workflow': '^3.2.0',
+      'chalk': '^4',
       'core-js': '^3.6.4',
       'node-fetch': '^2.6.0',
       'node-html-parser': '^5.4.2-0',
