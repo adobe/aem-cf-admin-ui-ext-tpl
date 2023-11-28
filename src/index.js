@@ -135,6 +135,13 @@ class MainGenerator extends Generator {
     
     // add web-src path, relative to config file
     utils.writeKeyYAMLConfig(this, this.extConfigPath, 'web', path.relative(this.extFolder, this.webSrcFolder))
+
+    // add hooks path
+    utils.writeKeyYAMLConfig(this, this.extConfigPath,
+      'hooks', {
+        'post-app-deploy': './hooks/post-deploy.js'
+      }
+    )
   }
 
   async conflicts () {
