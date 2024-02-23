@@ -15,7 +15,7 @@ governing permissions and limitations under the License.
 Extensibility Template for AEM Content Fragment Console
 
 # Prerequisites
-- `nodejs` (v14) and `npm` installed locally - https://nodejs.org/en/
+- `nodejs` (v18) and `npm` installed locally - https://nodejs.org/en/
 - `aio` command line tool - https://github.com/adobe/aio-cli, https://developer.adobe.com/runtime/docs/guides/tools/cli_install/
 - Project in Adobe Developer Console
 
