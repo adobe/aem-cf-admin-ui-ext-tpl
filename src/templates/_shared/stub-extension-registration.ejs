@@ -2,7 +2,12 @@
  * <license header>
  */
 
+<% if (
+        extensionManifest.actionBarButtons && (extensionManifest.actionBarButtons.filter(button => button.needsModal)).length ||
+        extensionManifest.headerMenuButtons && (extensionManifest.headerMenuButtons.filter(button => button.needsModal)).length
+) { %>
 import { generatePath } from "react-router";
+<% } %>
 import { Text } from "@adobe/react-spectrum";
 import { register } from "@adobe/uix-guest";
 import { extensionId } from "./Constants";
