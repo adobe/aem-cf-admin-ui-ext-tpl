@@ -52,10 +52,8 @@ function assertEnvContent (prevContent) {
 function assertFiles (extensionManifest) {
   // Asert generated web assets files
   assert.file(`${webSrcFolder}/index.html`)
-  assert.file(`${webSrcFolder}/src/exc-runtime.js`)
   assert.file(`${webSrcFolder}/src/index.css`)
   assert.file(`${webSrcFolder}/src/index.js`)
-  assert.file(`${webSrcFolder}/src/utils.js`)
   assert.file(`${webSrcFolder}/src/components/Constants.js`)
   assert.file(`${webSrcFolder}/src/components/App.js`)
   assert.file(`${webSrcFolder}/src/components/ExtensionRegistration.js`)
@@ -83,7 +81,7 @@ function assertFiles (extensionManifest) {
     `${webSrcFolder}/src/components/Constants.js`,
     `extensionId: '${extensionManifest.id}'`
   )
-  
+
   assert.fileContent(
     `${webSrcFolder}/index.html`,
     '<script src="./src/index.js"'
@@ -96,7 +94,7 @@ function assertFiles (extensionManifest) {
   allCustomButtons.forEach((button) => {
     if (button.needsModal) {
       const modalFileName = button.label.replace(/ /g, '') + 'Modal'
-      
+
       assert.fileContent(
         `${webSrcFolder}/src/components/App.js`,
         `import ${modalFileName} from "./${modalFileName}"`
@@ -128,7 +126,7 @@ function assertFiles (extensionManifest) {
 
 describe('run', () => {
   const prevDotEnv = 'FAKECONTENT'
-  
+
   test('test a generator invocation with custom code generation', async () => {
     const options = cloneDeep(basicGeneratorOptions)
     options['extension-manifest'] = customExtensionManifest
