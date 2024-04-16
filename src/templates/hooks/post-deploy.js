@@ -7,7 +7,6 @@ module.exports = (config) => {
     const yamlFile = fs.readFileSync(`${config.root}/app.config.yaml`, 'utf8')
     const yamlData = yaml.load(yamlFile)
     const { extensions } = yamlData
-    console.log(extensions);
     const appUrl = `https://${config.ow.namespace}.${config.app.hostname}`
 
     // For now we are ok just to read the first extension point to build the preview link
