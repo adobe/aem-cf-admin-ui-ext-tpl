@@ -11,6 +11,7 @@ import { generatePath } from "react-router";
 import { Text } from "@adobe/react-spectrum";
 import { register } from "@adobe/uix-guest";
 import { extensionId } from "./Constants";
+import metadata from '../../../../app-metadata.json';
 
 function ExtensionRegistration() {
   const init = async () => {
@@ -26,6 +27,7 @@ function ExtensionRegistration() {
               <%_ extensionManifest.actionBarButtons.forEach((button) => { -%>
               {
                 'id': '<%- button.id %>',
+                'metadata': metadata,
                 'label': '<%- button.label %>',
                 'icon': 'PublishCheck',
                 onClick(selections) {

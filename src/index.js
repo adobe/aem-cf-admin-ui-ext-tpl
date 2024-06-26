@@ -75,6 +75,9 @@ class MainGenerator extends Generator {
   }
 
   async writing () {
+    //generate default metadata
+    this.fs.writeJSON('src/app-metadata.json', {});
+
     // generate the generic action
     if (this.extensionManifest.runtimeActions) {
       this.extensionManifest.runtimeActions.forEach((action) => {
@@ -139,6 +142,8 @@ class MainGenerator extends Generator {
     // add hooks path
     utils.writeKeyYAMLConfig(this, this.extConfigPath,
       'hooks', {
+        'pre-app-run': 'node node_modules/@adobe/uix-guest/scripts/generate-metadata.js',
+        'pre-app-build': 'node node_modules/@adobe/uix-guest/scripts/generate-metadata.js',
         'post-app-deploy': './hooks/post-deploy.js'
       }
     )

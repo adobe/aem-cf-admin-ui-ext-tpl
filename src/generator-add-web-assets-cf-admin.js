@@ -70,7 +70,7 @@ class CFAdminWebAssetsGenerator extends Generator {
       '@adobe/aio-sdk': commonDependencyVersions['@adobe/aio-sdk'],
       '@adobe/exc-app': '^0.2.21',
       '@adobe/react-spectrum': '^3.4.0',
-      '@adobe/uix-guest': '^0.8.0',
+      '@adobe/uix-guest': '^0.10.0',
       '@react-spectrum/list': '^3.0.0-rc.0',
       '@spectrum-icons/workflow': '^3.2.0',
       'chalk': '^4',
@@ -81,7 +81,9 @@ class CFAdminWebAssetsGenerator extends Generator {
       'react-dom': '^16.13.1',
       'react-error-boundary': '^1.2.5',
       'react-router-dom': '^6.3.0',
-      'regenerator-runtime': '^0.13.5'
+      'regenerator-runtime': '^0.13.5',
+      "ajv": "^8.12.0",
+      "js-yaml": "^4.1.0"
     })
     utils.addDependencies(
       this,
@@ -94,6 +96,12 @@ class CFAdminWebAssetsGenerator extends Generator {
         'jest': '^27.2.4'
       },
       true
+    )
+    utils.addPkgScript(
+      this,
+      {
+        "transform:yaml-to-json": "node node_modules/@adobe/uix-guest/scripts/generate-metadata.js"
+      }
     )
   }
 
