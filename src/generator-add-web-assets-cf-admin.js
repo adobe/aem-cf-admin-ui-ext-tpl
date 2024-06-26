@@ -70,7 +70,7 @@ class CFAdminWebAssetsGenerator extends Generator {
       '@adobe/aio-sdk': commonDependencyVersions['@adobe/aio-sdk'],
       '@adobe/exc-app': '^0.2.21',
       '@adobe/react-spectrum': '^3.4.0',
-      '@adobe/uix-guest': '^0.10.0',
+      '@adobe/uix-guest': '^0.10.3',
       '@react-spectrum/list': '^3.0.0-rc.0',
       '@spectrum-icons/workflow': '^3.2.0',
       'chalk': '^4',
