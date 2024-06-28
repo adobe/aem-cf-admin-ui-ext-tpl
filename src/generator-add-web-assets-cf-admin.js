@@ -65,6 +65,10 @@ class CFAdminWebAssetsGenerator extends Generator {
     this.fs.writeJSON(this.destinationPath('.babelrc'), {
       plugins: ['@babel/plugin-transform-react-jsx']
     })
+
+    //generate default metadata
+    this.fs.writeJSON('src/app-metadata.json', {});
+
     // add dependencies
     utils.addDependencies(this, {
       '@adobe/aio-sdk': commonDependencyVersions['@adobe/aio-sdk'],

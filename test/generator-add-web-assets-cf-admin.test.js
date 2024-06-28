@@ -28,6 +28,7 @@ const {
 const extFolder = "src/aem-cf-console-admin-1";
 const extConfigPath = path.join(extFolder, "ext.config.yaml");
 const webSrcFolder = path.join(extFolder, "web-src");
+const srcFolder = "src";
 
 const basicGeneratorOptions = {
   "web-src-folder": webSrcFolder,
@@ -61,6 +62,8 @@ function assertFiles(extensionManifest) {
   assert.file(`${webSrcFolder}/src/components/App.js`);
   assert.file(`${webSrcFolder}/src/components/ExtensionRegistration.js`);
   assert.file(`${webSrcFolder}/src/components/ExtensionRegistration.js`);
+  assert.file(`${srcFolder}/app-metadata.json`);
+
 
   // Assert generated modal files
   const actionBarButtons = extensionManifest.actionBarButtons || [];
