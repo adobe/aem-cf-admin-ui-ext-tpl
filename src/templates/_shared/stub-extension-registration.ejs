@@ -17,6 +17,7 @@ function ExtensionRegistration() {
   const init = async () => {
     const guestConnection = await register({
       id: extensionId,
+      metadata,
       methods: {
         <%_ if (extensionManifest.actionBarButtons || extensionManifest.headerMenuButtons) { -%>
           <%_ if (extensionManifest.actionBarButtons) { -%>
@@ -27,7 +28,6 @@ function ExtensionRegistration() {
               <%_ extensionManifest.actionBarButtons.forEach((button) => { -%>
               {
                 'id': '<%- button.id %>',
-                'metadata': metadata,
                 'label': '<%- button.label %>',
                 'icon': 'PublishCheck',
                 onClick(selections) {
