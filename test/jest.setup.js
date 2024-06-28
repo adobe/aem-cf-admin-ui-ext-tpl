@@ -33,3 +33,14 @@ global.assertDependencies = (fs, dependencies, devDependencies) => {
     devDependencies
   }))
 }
+
+/**
+ * Checks that package.json has all needed scripts specified.
+ *
+ * @param {object} scripts An object representing expected package.json scripts.
+ */
+global.assertScripts = (fs, scripts) => {
+  expect(JSON.parse(fs.readFileSync('package.json').toString())).toEqual(expect.objectContaining({
+    scripts
+  }))
+}
