@@ -19,9 +19,15 @@ function ExtensionRegistration() {
       id: extensionId,
       metadata,
       methods: {
-        <%_ if (extensionManifest.actionBarButtons || extensionManifest.headerMenuButtons) { -%>
-          <%_ if (extensionManifest.actionBarButtons) { -%>
+        <%_ if (
+                extensionManifest.actionBarButtons ||
+                extensionManifest.headerMenuButtons ||
+                extensionManifest.headerMenuButtonsDelete ||
+                extensionManifest.actionBarButtonsDelete
+        ) { -%>
+          <%_ if (extensionManifest.actionBarButtons || extensionManifest.actionBarButtonsDelete) { -%>
         actionBar: {
+          <%_ if (extensionManifest.actionBarButtons) { -%>
           getButtons() {
             return [
               // YOUR ACTION BAR BUTTONS CODE SHOULD BE HERE
@@ -47,10 +53,23 @@ function ExtensionRegistration() {
               <%_ }) -%>
             ];
           },
+          <%_ } -%>
+          <%_ if (extensionManifest.actionBarButtonsDelete) { -%>
+          deleteButtons() {
+            return [
+              <%_ extensionManifest.actionBarButtonsDelete.forEach((button) => { -%>
+              {
+                'id': '<%- button.id %>',
+              },
+              <%_ }) -%>
+            ];
+          },
+          <%_ } -%>
         },
         <%_ } -%>
-          <%_ if (extensionManifest.headerMenuButtons) { -%>
+          <%_ if (extensionManifest.headerMenuButtons || extensionManifest.headerMenuButtonsDelete) { -%>
         headerMenu: {
+          <%_ if (extensionManifest.headerMenuButtons) { -%>
           getButtons() {
             return [
               // YOUR HEADER BUTTONS CODE SHOULD BE HERE
@@ -74,6 +93,18 @@ function ExtensionRegistration() {
               <%_ }) -%>
             ];
           },
+          <%_ } -%>
+          <%_ if (extensionManifest.headerMenuButtonsDelete) { -%>
+          deleteButtons() {
+            return [
+              <%_ extensionManifest.headerMenuButtonsDelete.forEach((button) => { -%>
+              {
+                'id': '<%- button.id %>',
+              },
+              <%_ }) -%>
+            ];
+          },
+          <%_ } -%>
         },
           <%_ }} -%>
       },
